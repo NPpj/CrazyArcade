@@ -79,9 +79,6 @@ public class JavaGameClientView extends JFrame {
 	JPanel panel;
 	private JLabel lblMouseEvent;
 	private Graphics gc;
-	private int pen_size = 2; // minimum 2
-	// 그려진 Image를 보관하는 용도, paint() 함수에서 이용한다.
-	private Image panelImage = null; 
 	private Graphics gc2 = null;
 
 
@@ -147,30 +144,7 @@ public class JavaGameClientView extends JFrame {
 		});
 		btnNewButton.setBounds(295, 539, 69, 40);
 		contentPane.add(btnNewButton);
-
-		panel = new JPanel();
-		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panel.setBackground(Color.WHITE);
-		panel.setBounds(376, 10, 400, 520);
-		contentPane.add(panel);
-		gc = panel.getGraphics();
 		
-		// Image 영역 보관용. paint() 에서 이용한다.
-		panelImage = createImage(panel.getWidth(), panel.getHeight());
-		gc2 = panelImage.getGraphics();
-		gc2.setColor(panel.getBackground());
-		gc2.fillRect(0,0, panel.getWidth(),  panel.getHeight());
-		gc2.setColor(Color.BLACK);
-		gc2.drawRect(0,0, panel.getWidth()-1,  panel.getHeight()-1);
-		
-		lblMouseEvent = new JLabel("<dynamic>");
-		lblMouseEvent.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMouseEvent.setFont(new Font("굴림", Font.BOLD, 14));
-		lblMouseEvent.setBorder(new LineBorder(new Color(0, 0, 0)));
-		lblMouseEvent.setBackground(Color.WHITE);
-		lblMouseEvent.setBounds(376, 539, 400, 40);
-		contentPane.add(lblMouseEvent);
-
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 //			is = socket.getInputStream();
@@ -192,13 +166,6 @@ public class JavaGameClientView extends JFrame {
 			btnSend.addActionListener(action);
 			txtInput.addActionListener(action);
 			txtInput.requestFocus();
-			ImageSendAction action2 = new ImageSendAction();
-			imgBtn.addActionListener(action2);
-			MyMouseEvent mouse = new MyMouseEvent();
-			panel.addMouseMotionListener(mouse);
-			panel.addMouseListener(mouse);
-			MyMouseWheelEvent wheel = new MyMouseWheelEvent();
-			panel.addMouseWheelListener(wheel);
 
 
 		} catch (NumberFormatException | IOException e) {
@@ -207,12 +174,6 @@ public class JavaGameClientView extends JFrame {
 			AppendText("connect error");
 		}
 
-	}
-
-	public void paint(Graphics g) {
-		super.paint(g);
-		// Image 영역이 가려졌다 다시 나타날 때 그려준다.
-		gc.drawImage(panelImage, 0, 0, this);
 	}
 	
 	// Server Message를 수신해서 화면에 표시
@@ -245,14 +206,10 @@ public class JavaGameClientView extends JFrame {
 						else
 							AppendText(msg);
 						break;
-					case "300": // Image 첨부
-						if (cm.UserName.equals(UserName))
-							AppendTextR("[" + cm.UserName + "]");
-						else
-							AppendText("[" + cm.UserName + "]");
-						AppendImage(cm.img);
+					case "300": // Keyboard Event 수신
+						
 						break;
-					case "500": // Mouse Event 수신
+					case "400": // Mouse Event 수신
 						DoMouseEvent(cm);
 						break;
 					}
@@ -277,95 +234,22 @@ public class JavaGameClientView extends JFrame {
 
 	// Mouse Event 수신 처리
 	public void DoMouseEvent(ChatMsg cm) {
-		Color c;
-		if (cm.UserName.matches(UserName)) // 본인 것은 이미 Local 로 그렸다.
-			return;
-		c = new Color(255, 0, 0); // 다른 사람 것은 Red
-		gc2.setColor(c);
-		gc2.fillOval(cm.mouse_e.getX() - pen_size/2, cm.mouse_e.getY() - cm.pen_size/2, cm.pen_size, cm.pen_size);
-		gc.drawImage(panelImage, 0, 0, panel);
+//		Color c;
+//		if (cm.UserName.matches(UserName)) // 본인 것은 이미 Local 로 그렸다.
+//			return;
+//		c = new Color(255, 0, 0); // 다른 사람 것은 Red
+//		gc2.setColor(c);
+//		gc2.fillOval(cm.mouse_e.getX() - pen_size/2, cm.mouse_e.getY() - cm.pen_size/2, cm.pen_size, cm.pen_size);
+//		gc.drawImage(panelImage, 0, 0, panel);
 	}
 
 	public void SendMouseEvent(MouseEvent e) {
-		ChatMsg cm = new ChatMsg(UserName, "500", "MOUSE");
-		cm.mouse_e = e;
-		cm.pen_size = pen_size;
-		SendObject(cm);
+//		ChatMsg cm = new ChatMsg(UserName, "500", "MOUSE");
+//		cm.mouse_e = e;
+//		cm.pen_size = pen_size;
+//		SendObject(cm);
 	}
-
-	class MyMouseWheelEvent implements MouseWheelListener {
-		@Override
-		public void mouseWheelMoved(MouseWheelEvent e) {
-			// TODO Auto-generated method stub
-			if (e.getWheelRotation() < 0) { // 위로 올리는 경우 pen_size 증가
-				if (pen_size < 20)
-					pen_size++;
-			} else {
-				if (pen_size > 2)
-					pen_size--;
-			}
-			lblMouseEvent.setText("mouseWheelMoved Rotation=" + e.getWheelRotation() 
-				+ " pen_size = " + pen_size + " " + e.getX() + "," + e.getY());
-
-		}
-		
-	}
-	// Mouse Event Handler
-	class MyMouseEvent implements MouseListener, MouseMotionListener {
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mouseDragged " + e.getX() + "," + e.getY());// 좌표출력가능
-			Color c = new Color(0,0,255);
-			gc2.setColor(c);
-			gc2.fillOval(e.getX()-pen_size/2, e.getY()-pen_size/2, pen_size, pen_size);
-			// panelImnage는 paint()에서 이용한다.
-			gc.drawImage(panelImage, 0, 0, panel);
-			SendMouseEvent(e);
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mouseMoved " + e.getX() + "," + e.getY());
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mouseClicked " + e.getX() + "," + e.getY());
-			Color c = new Color(0,0,255);
-			gc2.setColor(c);
-			gc2.fillOval(e.getX()-pen_size/2, e.getY()-pen_size/2, pen_size, pen_size);
-			gc.drawImage(panelImage, 0, 0, panel);
-			SendMouseEvent(e);
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mouseEntered " + e.getX() + "," + e.getY());
-			// panel.setBackground(Color.YELLOW);
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mouseExited " + e.getX() + "," + e.getY());
-			// panel.setBackground(Color.CYAN);
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mousePressed " + e.getX() + "," + e.getY());
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			lblMouseEvent.setText(e.getButton() + " mouseReleased " + e.getX() + "," + e.getY());
-			// 드래그중 멈출시 보임
-
-		}
-	}
-
+	
 	// keyboard enter key 치면 서버로 전송
 	class TextSendAction implements ActionListener {
 		@Override
@@ -382,36 +266,6 @@ public class JavaGameClientView extends JFrame {
 					System.exit(0);
 			}
 		}
-	}
-
-	class ImageSendAction implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// 액션 이벤트가 sendBtn일때 또는 textField 에세 Enter key 치면
-			if (e.getSource() == imgBtn) {
-				frame = new Frame("이미지첨부");
-				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD);
-				// frame.setVisible(true);
-				// fd.setDirectory(".\\");
-				fd.setVisible(true);
-				// System.out.println(fd.getDirectory() + fd.getFile());
-				if (fd.getDirectory().length() > 0 && fd.getFile().length() > 0) {
-					ChatMsg obcm = new ChatMsg(UserName, "300", "IMG");
-					ImageIcon img = new ImageIcon(fd.getDirectory() + fd.getFile());
-					obcm.img = img;
-					SendObject(obcm);
-				}
-			}
-		}
-	}
-
-	ImageIcon icon1 = new ImageIcon("src/icon1.jpg");
-
-	public void AppendIcon(ImageIcon icon) {
-		int len = textArea.getDocument().getLength();
-		// 끝으로 이동
-		textArea.setCaretPosition(len);
-		textArea.insertIcon(icon);
 	}
 
 	// 화면에 출력
@@ -495,7 +349,6 @@ public class JavaGameClientView extends JFrame {
 		// panelImage = ori_img.getScaledInstance(panel.getWidth(), panel.getHeight(), Image.SCALE_DEFAULT);
 
 		gc2.drawImage(ori_img,  0,  0, panel.getWidth(), panel.getHeight(), panel);
-		gc.drawImage(panelImage, 0, 0, panel.getWidth(), panel.getHeight(), panel);
 	}
 
 	// Windows 처럼 message 제외한 나머지 부분은 NULL 로 만들기 위한 함수
