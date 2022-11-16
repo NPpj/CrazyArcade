@@ -7,8 +7,10 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import com.sun.tools.javac.Main;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,7 +22,7 @@ public class JavaGameClientMain extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtUserName;
-	private JTextField txtUserPassword;
+	private JPasswordField txtUserPassword;
 	private JTextField txtIpAddress;
 	private JTextField txtPortNumber;
 	
@@ -80,7 +82,7 @@ public class JavaGameClientMain extends JFrame {
 		txtUserName.setColumns(10);
 		
 		// jw2. 사용자 비밀번호
-		txtUserPassword = new JTextField();
+		txtUserPassword = new JPasswordField();
 		// 내부 여백. 상, 좌, 하, 우
 		txtUserPassword.setBorder(BorderFactory.createEmptyBorder(0, 10, 0 , 0));
 		txtUserPassword.setHorizontalAlignment(SwingConstants.LEFT);
@@ -115,7 +117,6 @@ public class JavaGameClientMain extends JFrame {
 		txtUserPassword.addActionListener(action);
 		
 	}
-	
 	
 	
 	public ImageIcon resizeIcon(Image img, Integer width, Integer height) {
@@ -164,8 +165,11 @@ public class JavaGameClientMain extends JFrame {
 			
 			if(!txtUserName.getText().isEmpty() && !txtUserPassword.getText().isEmpty()) {
 				if(checkUserData(txtUserName.getText(), txtUserPassword.getText())) {
-					JavaGameClientView view = new JavaGameClientView(username, ip_addr, port_no);
 					setVisible(false);
+					
+					// 로비 frame 열기 
+					LobbyFrame frame = new LobbyFrame(username, ip_addr, port_no);
+					frame.setVisible(true);
 				}
 				else {
 					

@@ -1,12 +1,19 @@
-package Lobby;
+
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,32 +24,32 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+
 public class MakeRoomDialog extends JDialog {
 
 	private MakeRoomPanel makeRoomPanel = new MakeRoomPanel();
-	private ImageIcon backgroundIcon = new ImageIcon("/Users/mihye/Desktop/2022-2 강의/네트워크프로그래밍/프젝/image/makeRoom.png");
+	private ImageIcon backgroundIcon = new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/makeRoom.png"));
 	private Image backgroundImage  = backgroundIcon.getImage(); //이미지 객체
 	private JPasswordField roomPassword;
 	private JTextField roomTitle;
+	private String userName;
 	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			MakeRoomDialog dialog = new MakeRoomDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
+	private Socket socket; // 연결소켓
+
+
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	
 
 	/**
 	 * Create the dialog.
 	 */
-	public MakeRoomDialog() {
-		setBounds(100, 100, 450, 350);
+	public MakeRoomDialog(String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+		this.userName=userName;
+		this.ois = ois;
+		this.oos= oos;
+		setBounds(300, 300, 450, 350);
 		getContentPane().setLayout(new BorderLayout());
 		makeRoomPanel.setLayout(null);
 		makeRoomPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -51,9 +58,15 @@ public class MakeRoomDialog extends JDialog {
 		
 	}
 	
+	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
+		try {
+			oos.writeObject(ob);
+		} catch (IOException e) {
+			System.out.println("SendObject Error");
+		}
+	}
+	
 	class MakeRoomPanel extends JPanel{
-		private ImageIcon backgroundIcon = new ImageIcon("/Users/mihye/Desktop/2022-2 강의/네트워크프로그래밍/프젝/image/makeRoom.png");
-		private Image backgroundImage  = backgroundIcon.getImage(); //이미지 객체
 		
 		public MakeRoomPanel() {
 			
@@ -94,7 +107,7 @@ public class MakeRoomDialog extends JDialog {
 			add(roomPassword);
 			
 			//확인 버튼 
-			ImageIcon okBtnImage = new ImageIcon("/Users/mihye/Desktop/2022-2 강의/네트워크프로그래밍/프젝/image/확인.png");
+			ImageIcon okBtnImage = new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/btn_ok.png"));
 			JButton okBtn = new JButton(okBtnImage);
 			okBtn.setBounds(95, 260, 110, 40);
 			add(okBtn);
@@ -103,14 +116,18 @@ public class MakeRoomDialog extends JDialog {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	                if(e.getSource()==okBtn) {
-	                	System.out.println("Title: "+roomTitle.getText()+", Password: "+roomPassword.getText());
+	                	String RoomInfo = "Title: "+roomTitle.getText()+", Password: "+roomPassword.getText();
+
+	                	ChatMsg obcm = new ChatMsg(userName, "101", RoomInfo);
+	        			SendObject(obcm);
+	        			
 	                	MakeRoomDialog.this.dispose();
 	                }	
 	            }
 	        });
 			
 			//취소 버튼 
-			ImageIcon cancelBtnImage = new ImageIcon("/Users/mihye/Desktop/2022-2 강의/네트워크프로그래밍/프젝/image/취소.png");
+			ImageIcon cancelBtnImage = new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/btn_cancel.png"));
 			JButton cancelBtn = new JButton(cancelBtnImage);
 			cancelBtn.setBounds(235, 260, 110, 40);
 			add(cancelBtn);
@@ -131,10 +148,69 @@ public class MakeRoomDialog extends JDialog {
 			
 			g.drawImage(backgroundImage,0,0,getWidth(),getHeight(), this);
 		}
+		
+		public void customCursor() {
+	        // Custom Cursor 설정하기 
+	        Toolkit tk = Toolkit.getDefaultToolkit();
+	        Image cursorimage = tk.getImage(JavaGameClientMain.class.getResource("/assets/cursor.png"));
+	        Point point = new Point(10,10);
+	        Cursor cursor = tk.createCustomCursor(cursorimage, point, "");
+	        
+	        getContentPane().setCursor(cursor);
+	    }
 	
 		
 		
 	}
+	
+	// Server Message를 수신해서 화면에 표시
+		class ListenNetwork extends Thread {
+			public void run() {
+				while (true) {
+					try {
+						
+						Object obcm = null;
+						String msg = null;
+						ChatMsg cm;
+						try {
+							obcm = ois.readObject();
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							break;
+						}
+						if (obcm == null)
+							break;
+						if (obcm instanceof ChatMsg) {
+							cm = (ChatMsg) obcm;
+							msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
+						} else
+							continue;
+//						switch (cm.getCode()) {
+//						case "200": // chat message
+//							AppendText(msg);
+//							break;
+//						case "300": // Image 첨부
+//							AppendText("[" + cm.getId() + "]");
+//							AppendImage(cm.img);
+//							break;
+//						}
+					} catch (IOException e) {
+//						AppendText("ois.readObject() error");
+						try {
+							ois.close();
+							oos.close();
+							socket.close();
+
+							break;
+						} catch (Exception ee) {
+							break;
+						} // catch문 끝
+					} // 바깥 catch문끝
+
+				}
+			}
+		}
 	
 	
 
