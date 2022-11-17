@@ -77,7 +77,7 @@ public class JavaGameClientMain extends JFrame {
 		txtUserName = new JTextField();
 		txtUserName.setBorder(BorderFactory.createEmptyBorder(0, 10, 0 , 0));
 		txtUserName.setHorizontalAlignment(SwingConstants.LEFT);
-		txtUserName.setBounds(462, 573, 187, 24);
+		txtUserName.setBounds(472, 581, 187, 24);
 		contentPane.add(txtUserName);
 		txtUserName.setColumns(10);
 		
@@ -86,7 +86,7 @@ public class JavaGameClientMain extends JFrame {
 		// 내부 여백. 상, 좌, 하, 우
 		txtUserPassword.setBorder(BorderFactory.createEmptyBorder(0, 10, 0 , 0));
 		txtUserPassword.setHorizontalAlignment(SwingConstants.LEFT);
-		txtUserPassword.setBounds(462, 604, 187, 24);
+		txtUserPassword.setBounds(472, 612, 187, 24);
 		contentPane.add(txtUserPassword);
 		txtUserPassword.setColumns(10);
 		
@@ -96,7 +96,7 @@ public class JavaGameClientMain extends JFrame {
 		ImageIcon imgConnect = new ImageIcon(JavaGameClientMain.class.getResource("/assets/login/btn_login.png"));
 		// icon 크기 조정
 		btnConnect.setIcon(resizeIcon(imgConnect.getImage(), 186, 44));
-		btnConnect.setBounds(290, 657, 186, 44);
+		btnConnect.setBounds(297, 669, 186, 44);
 		contentPane.add(btnConnect);
 		
 		// jw4. 종료 버튼
@@ -104,7 +104,7 @@ public class JavaGameClientMain extends JFrame {
 		btnExit.setBorderPainted(false);
 		ImageIcon imgExit = new ImageIcon(JavaGameClientMain.class.getResource("/assets/login/btn_exit.png"));
 		btnExit.setIcon(resizeIcon(imgExit.getImage(), 186, 44));
-		btnExit.setBounds(511, 657, 186, 44);
+		btnExit.setBounds(518, 669, 186, 44);
 		contentPane.add(btnExit);
 		btnExit.revalidate();
 		btnExit.repaint();
