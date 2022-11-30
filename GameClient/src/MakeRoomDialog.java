@@ -2,6 +2,7 @@
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -19,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -33,6 +35,7 @@ public class MakeRoomDialog extends JDialog {
 	private JPasswordField roomPassword;
 	private JTextField roomTitle;
 	private String userName;
+	private Container c;
 	
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 	private Socket socket; // 연결소켓
@@ -45,7 +48,8 @@ public class MakeRoomDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public MakeRoomDialog(String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+	public MakeRoomDialog(Container c, String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+		this.c=c;
 		this.userName=userName;
 		this.ois = ois;
 		this.oos= oos;
@@ -122,6 +126,13 @@ public class MakeRoomDialog extends JDialog {
 	        			SendObject(obcm);
 	        			
 	                	MakeRoomDialog.this.dispose();
+	                	
+
+//						대기방 열기 
+	                	WaitRoomFrame waitFrame = new WaitRoomFrame(userName,ois,oos);
+	                	waitFrame.setVisible(true);
+	                	
+	                	
 	                }	
 	            }
 	        });
@@ -137,6 +148,7 @@ public class MakeRoomDialog extends JDialog {
 	            public void actionPerformed(ActionEvent e) {
 	                if(e.getSource()==cancelBtn) {
 	                	MakeRoomDialog.this.dispose();
+	                	
 	                	
 	                }	
 	            }
@@ -163,56 +175,5 @@ public class MakeRoomDialog extends JDialog {
 		
 	}
 	
-	// Server Message를 수신해서 화면에 표시
-		class ListenNetwork extends Thread {
-			public void run() {
-				while (true) {
-					try {
-						
-						Object obcm = null;
-						String msg = null;
-						ChatMsg cm;
-						try {
-							obcm = ois.readObject();
-						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							break;
-						}
-						if (obcm == null)
-							break;
-						if (obcm instanceof ChatMsg) {
-							cm = (ChatMsg) obcm;
-							msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
-						} else
-							continue;
-//						switch (cm.getCode()) {
-//						case "200": // chat message
-//							AppendText(msg);
-//							break;
-//						case "300": // Image 첨부
-//							AppendText("[" + cm.getId() + "]");
-//							AppendImage(cm.img);
-//							break;
-//						}
-					} catch (IOException e) {
-//						AppendText("ois.readObject() error");
-						try {
-							ois.close();
-							oos.close();
-							socket.close();
-
-							break;
-						} catch (Exception ee) {
-							break;
-						} // catch문 끝
-					} // 바깥 catch문끝
-
-				}
-			}
-		}
-	
-	
-
 
 }

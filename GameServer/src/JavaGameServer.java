@@ -272,7 +272,7 @@ public class JavaGameServer extends JFrame {
 			    oos.writeObject(ob);
 			} 
 			catch (IOException e) {
-				AppendText("oos.writeObject(ob) error");		
+				AppendText("oos.writeObject(ob) error in WriteOneOject");		
 				try {
 					ois.close();
 					oos.close();
@@ -291,12 +291,12 @@ public class JavaGameServer extends JFrame {
 		public void run() {
 			while (true) { // 사용자 접속을 계속해서 받기 위해 while문
 				try {
-					
 					Object obcm = null;
 					String msg = null;
 					ChatMsg cm = null;
 					if (socket == null)
 						break;
+					
 					try {
 						obcm = ois.readObject();
 					} catch (ClassNotFoundException e) {
@@ -304,13 +304,15 @@ public class JavaGameServer extends JFrame {
 						e.printStackTrace();
 						return;
 					}
+					
 					if (obcm == null)
 						break;
 					if (obcm instanceof ChatMsg) {
 						cm = (ChatMsg) obcm;
-						//AppendObject(cm);
+//						AppendObject(cm);
 					} else
 						continue;
+					
 					if (cm.code.matches("100")) {  // 로그인 
 						UserName = cm.UserName;
 						UserStatus = "O"; // Online 상태
@@ -318,7 +320,14 @@ public class JavaGameServer extends JFrame {
 					}else if(cm.code.matches("101")) {   // 방만들기 
 						String RoomInfo = cm.getData();
 						AppendText("[방생성] 방장: " + UserName +", "+RoomInfo);
-					}else if (cm.code.matches("400")) { // logout message 처리
+//						WriteAllObject(cm);
+						
+					}else if(cm.code.matches("200")){ // 채팅메시지 
+//						msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
+						AppendText(msg); // server 화면에 출력
+//						WriteAllObject(cm);
+					}
+					else if (cm.code.matches("400")) { // logout message 처리
 						Logout();
 						break;
 					} else { // 300, 500, ... 기타 object는 모두 방송한다.

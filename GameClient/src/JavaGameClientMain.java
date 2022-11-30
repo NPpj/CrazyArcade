@@ -44,6 +44,10 @@ public class JavaGameClientMain extends JFrame {
 				try {
 					JavaGameClientMain frame = new JavaGameClientMain();
 					frame.setVisible(true);
+					
+//					WaitRoomFrame waitFrame = new WaitRoomFrame("미혜");
+//                	waitFrame.setVisible(true);
+//                	waitFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -166,6 +170,7 @@ public class JavaGameClientMain extends JFrame {
 			if(!txtUserName.getText().isEmpty() && !txtUserPassword.getText().isEmpty()) {
 				if(checkUserData(txtUserName.getText(), txtUserPassword.getText())) {
 					setVisible(false);
+					
 					
 					// 로비 frame 열기 
 					LobbyFrame frame = new LobbyFrame(username, ip_addr, port_no);

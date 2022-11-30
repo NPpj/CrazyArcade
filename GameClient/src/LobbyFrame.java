@@ -103,7 +103,7 @@ public class LobbyFrame extends JFrame {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	                if(e.getSource()==makeRoomBtn) {
-	                	makeRoomDialog = new MakeRoomDialog(userName,ois,oos);
+	                	makeRoomDialog = new MakeRoomDialog(c, userName,ois,oos);
 	                	makeRoomDialog.setVisible(true);
 	                	
 	                }	
@@ -120,7 +120,6 @@ public class LobbyFrame extends JFrame {
 		
 		
 	}
-	
 
 	// Server Message를 수신해서 화면에 표시
 	class ListenNetwork extends Thread {
