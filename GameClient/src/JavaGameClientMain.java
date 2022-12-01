@@ -203,8 +203,10 @@ public class JavaGameClientMain extends JFrame {
 					net.start();
 					
 
-					ChatMsg obcm = new ChatMsg(txtUserName.getText(), "100", "Login");
-					SendObject(obcm);
+					GamingView game = new GamingView(txtUserName.getName(),net);
+					game.setVisible(true);
+//					ChatMsg obcm = new ChatMsg(txtUserName.getText(), "100", "Login");
+//					SendObject(obcm);
 				}
 				else {
 					

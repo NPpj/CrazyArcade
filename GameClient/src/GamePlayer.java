@@ -100,28 +100,46 @@ public class GamePlayer {
 	}
 	
 	public void moveToRight() {
-		if(pos_X <= SCREEN_X-PLAYER_MOVE)
+		if(pos_X <= 720)
 			pos_X += PLAYER_MOVE;
 		
 		state = playerRightMove;
 	}
 	public void moveToLeft() {
-		if(pos_X >= PLAYER_MOVE)
+		if(pos_X >= 18)
 			pos_X -= PLAYER_MOVE;
 		
 		state = playerLeftMove;
 	}
 	public void moveToUp() {
-		if(pos_Y >= PLAYER_MOVE)
+		if(pos_Y >= 45)
 			pos_Y -= PLAYER_MOVE;
 		
 		state = playerUpMove;
 	}
 	public void moveToDown() {
-		if(pos_X <= SCREEN_Y-PLAYER_MOVE)
+		if(pos_Y <= 640)
 			pos_Y += PLAYER_MOVE;
 		
 		state = playerDownMove;
 	}
-	
+	public int getMapX() {
+		int i;
+		for(i=0;i<15;i++) {
+			if(pos_X <= (18+47*i)) {
+				return i;
+			}
+		}
+		return i;
+	}
+	public int getMapY() {
+		int i;
+		for(i=0;i<15;i++) {
+			if(pos_Y <= (48+46*i)) {
+				return i;
+			}
+		}
+		return i;
+			
+	}
 }

@@ -8,8 +8,8 @@ import javax.swing.JLabel;
 
 public class Tile {
 	private String type;
-	public static final int BLOCK_W = 50;
-	public static final int BLOCK_H = 60;
+	public static final int BLOCK_W = 70;
+	public static final int BLOCK_H = 70;
 	public static final int GRASS_W = 50;
 	public static final int GRASS_H = 50;
 	public static final int FLOWER_W = 60;
@@ -19,15 +19,15 @@ public class Tile {
 		switch(state) {
 		case "block1":
 			setState(getTileBlock1());
-			g.drawImage(getState(), (x*50)+25,(y*50)+48, BLOCK_W, BLOCK_H, null);
+			g.drawImage(getState(), (x*50)+18,(y*50)+48, BLOCK_W, BLOCK_H, null);
 			break;
 		case "flower1":
 			setState(getTileFlower1());
-			g.drawImage(getState(), (x*50)+25,(y*50)+48, FLOWER_W, FLOWER_H, null);
+			g.drawImage(getState(), (x*50)+18,(y*50)+48, FLOWER_W, FLOWER_H, null);
 			break;
 		case "flower2":
 			setState(getTileFlower2());
-			g.drawImage(getState(), (x*50)+25,(y*50)+48, FLOWER_W, FLOWER_H, null);
+			g.drawImage(getState(), (x*50)+18,(y*50)+48, FLOWER_W, FLOWER_H, null);
 			break;
 		}
 	}

@@ -21,6 +21,8 @@ public class GamingView extends JFrame implements Runnable{
 	
 	private Thread th;
 	private int cnt; // 무한루프를 카운터 하기 위한 변수
+	private ListenNetwork net;
+	
 	
 	public static final int PLAYER_LEFT_RIGHT_MOVING_FRAME = 8;
 	public static final int PLAYER_UP_DOWN_MOVING_FRAME = 6;
@@ -64,7 +66,11 @@ public class GamingView extends JFrame implements Runnable{
 	private ObjectOutputStream oos;
 	
 	// 생성자
-	public GamingView(String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+	public GamingView(String userName, ListenNetwork net) {
+		this.ois = net.getOIS();
+		this.oos = net.getOOS();
+		
+		
 		getContentPane().setBackground(new Color(255, 255, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
 //		setBounds(100, 100, 1013, 793);
@@ -94,7 +100,7 @@ public class GamingView extends JFrame implements Runnable{
 	public void run() { // 스레드 메소드, 무한 루프
 		while(true) {
 			try {
-				System.out.println("쓰레드 실행중");
+//				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
 				repaint();
 				Thread.sleep(20);
@@ -124,8 +130,8 @@ public class GamingView extends JFrame implements Runnable{
 		// background를 오프스크린에 그림
 		Dimension d = getSize();
 		g.drawImage(background, 0, 0, d.width, d.height, null);
-		drawPlayer();
 		drawTile();
+		drawPlayer();
 		
 		this.repaint();
 	}
@@ -172,6 +178,7 @@ public class GamingView extends JFrame implements Runnable{
 		String direction = player.getDirection();
 		
 		if(keyListener.playerMove) {
+			System.out.println("x:"+player.getMapX()+" y:"+player.getMapY());
 			if(direction.equals("up") || direction.equals("down")){ // 케릭터의 움직임 여부를 판단합니다.
 				//케릭터의 방향에 따라 걸어가는 모션을 취하는 
 				//케릭터 이미지를 시간차를 이용해 순차적으로 그립니다.
