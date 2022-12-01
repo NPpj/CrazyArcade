@@ -112,9 +112,9 @@ public class WaitRoomFrame  extends JFrame {
 	                	
 //	                	GameFrame gameFrame = new GameFrame();
 //	                	gameFrame.setVisible(true);
-	                	
-	                	GamingView game = new GamingView();
-	                	game.setVisible(true);
+//	                	
+//	                	GamingView game = new GamingView();
+//	                	game.setVisible(true);
 	                			
 	                }
 			}

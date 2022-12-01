@@ -26,11 +26,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> f07e3abc57a1b8df272cb6aa72c0e28f583f59f7
 public class MakeRoomDialog extends JDialog {
 
 	private MakeRoomPanel makeRoomPanel = new MakeRoomPanel();
@@ -41,12 +36,8 @@ public class MakeRoomDialog extends JDialog {
 	private JTextField roomTitle;
 	private String userName;
 	private Container c;
-
-<<<<<<< HEAD
 	private ListenNetwork net;
 	
-=======
->>>>>>> f07e3abc57a1b8df272cb6aa72c0e28f583f59f7
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 	private Socket socket; // 연결소켓
 
@@ -56,7 +47,6 @@ public class MakeRoomDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-<<<<<<< HEAD
 	public MakeRoomDialog(Container c, String userName, ListenNetwork net) {
 		this.c=c;
 		this.userName=userName;
@@ -64,15 +54,6 @@ public class MakeRoomDialog extends JDialog {
 		this.ois = net.getOIS();
 		this.oos = net.getOOS();
 		setBounds(300, 300, 450, 350);
-=======
-	public MakeRoomDialog(Container c, String userName, ObjectInputStream ois, ObjectOutputStream oos) {
-		this.c = c;
-		this.userName = userName;
-		this.ois = ois;
-		this.oos = oos;
-		setBounds(300, 300, 465, 360);
-		// setBounds(300, 300, 450, 350lo);
->>>>>>> f07e3abc57a1b8df272cb6aa72c0e28f583f59f7
 		getContentPane().setLayout(new BorderLayout());
 		makeRoomPanel.setLayout(null);
 		makeRoomPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -133,7 +114,6 @@ public class MakeRoomDialog extends JDialog {
 			JButton okBtn = new JButton(okBtnImage);
 			okBtn.setBounds(95, 260, 110, 40);
 			add(okBtn);
-<<<<<<< HEAD
 			
 			okBtn.addActionListener(new ActionListener() {
 	            @Override
@@ -160,31 +140,6 @@ public class MakeRoomDialog extends JDialog {
 			
 			//취소 버튼 
 			ImageIcon cancelBtnImage = new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/btn_cancel.png"));
-=======
-
-			okBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (e.getSource() == okBtn) {
-						String RoomInfo = "Title: " + roomTitle.getText() + ", Password: " + roomPassword.getText();
-
-						ChatMsg obcm = new ChatMsg(userName, "101", RoomInfo);
-						SendObject(obcm);
-
-						MakeRoomDialog.this.dispose();
-
-//						대기방 열기 
-						WaitRoomFrame waitFrame = new WaitRoomFrame(userName, ois, oos);
-						waitFrame.setVisible(true);
-
-					}
-				}
-			});
-
-			// 취소 버튼
-			ImageIcon cancelBtnImage = new ImageIcon(
-					JavaGameClientMain.class.getResource("/assets/lobby/btn_cancel.png"));
->>>>>>> f07e3abc57a1b8df272cb6aa72c0e28f583f59f7
 			JButton cancelBtn = new JButton(cancelBtnImage);
 			cancelBtn.setBounds(235, 260, 110, 40);
 			add(cancelBtn);
@@ -207,7 +162,7 @@ public class MakeRoomDialog extends JDialog {
 		}
 
 		public void customCursor() {
-<<<<<<< HEAD
+
 	        // Custom Cursor 설정하기 
 	        Toolkit tk = Toolkit.getDefaultToolkit();
 	        Image cursorimage = tk.getImage(JavaGameClientMain.class.getResource("/assets/cursor.png"));
@@ -217,20 +172,6 @@ public class MakeRoomDialog extends JDialog {
 	        getContentPane().setCursor(cursor);
 	    }
 		
-	
-		
-		
-=======
-			// Custom Cursor 설정하기
-			Toolkit tk = Toolkit.getDefaultToolkit();
-			Image cursorimage = tk.getImage(JavaGameClientMain.class.getResource("/assets/cursor.png"));
-			Point point = new Point(10, 10);
-			Cursor cursor = tk.createCustomCursor(cursorimage, point, "");
-
-			getContentPane().setCursor(cursor);
-		}
-
->>>>>>> f07e3abc57a1b8df272cb6aa72c0e28f583f59f7
 	}
 
 }
