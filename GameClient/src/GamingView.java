@@ -6,14 +6,18 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import javax.swing.*;
+import java.awt.Color;
 
 public class GamingView extends JFrame implements Runnable{
 	private Image screenImage;
 	private Graphics screenGraphics;
 	private Graphics img_g; // 이중 버퍼림 위함
-	private Container c;
+	//private Container c;
 	
 	private Thread th;
 	private int cnt; // 무한루프를 카운터 하기 위한 변수
@@ -51,49 +55,33 @@ public class GamingView extends JFrame implements Runnable{
 			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
 			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1}
 	};
-		
 
+	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
+	private Socket socket; // 연결소켓
 
+	private String userName;
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	
 	// 생성자
-	public GamingView() {
+	public GamingView(String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+		getContentPane().setBackground(new Color(255, 255, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
+//		setBounds(100, 100, 1013, 793);
 		setBounds(100, 100, 998, 783);
 		setTitle("CrazyArcade");
 		setResizable(false);
 		setLocationRelativeTo(null);
 		//setSize(998,773);
 		setVisible(true);
-		c = getContentPane();
 		
 		keyListener = new KeyListener();
 		// 키 리스너 생성
 		addKeyListener(keyListener);
 		
-
-		// 초기 맵 깔기 
-		for(int y=12; y>=0; y--) {
-			for(int x=0; x<15;x++) {
-				switch(map[y][x]) {
-				case 0:
-					break;
-				case 1:
-					Tile block = new Tile(x,y,BLOCK_W,BLOCK_H,"상자",c);
-					break;
-				case 2:
-					Tile flower1 = new Tile(x,y,FLOWER_W,FLOWER_H,"꽃1",c);
-					break;
-				case 3:
-					Tile flower2 = new Tile(x,y,FLOWER_W,FLOWER_H,"꽃2",c);
-					break;
-			}
-			};
-		
-		}
-//		
 		// 플레이어 초기 설정
-		player.init(400,300,"down");
+		player.init(250,300,"down");
 		start();
-		run();
 	}
 	
 	
@@ -102,14 +90,19 @@ public class GamingView extends JFrame implements Runnable{
 		th.start();
 	}
 	
+	@Override
 	public void run() { // 스레드 메소드, 무한 루프
 		while(true) {
 			try {
+				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
 				repaint();
 				Thread.sleep(20);
 				cnt++;
-			}catch(Exception e) {}
+				
+			}catch(Exception e) {
+				System.out.println("쓰레드 오류");
+			}
 		}
 	}
 	
@@ -122,7 +115,6 @@ public class GamingView extends JFrame implements Runnable{
 		screenDraw(screenGraphics);
 		
 		// 더블 버퍼링 이용해 버퍼에 그려진 것 가져옴
-		//MovingImage(player.getState(), x, y, 50, 50);
 		// 오프스크린에 그린 내용 실제 화면에 그림
 		g.drawImage(screenImage, 0, 0, null);
 	}
@@ -133,10 +125,37 @@ public class GamingView extends JFrame implements Runnable{
 		Dimension d = getSize();
 		g.drawImage(background, 0, 0, d.width, d.height, null);
 		drawPlayer();
+		drawTile();
 		
 		this.repaint();
 	}
 	
+	public void drawTile() {
+		Image temp_img = null;
+		screenGraphics.setClip(null);
+		// 초기 맵 깔기 
+		for(int y=12; y>=0; y--) {
+			for(int x=0; x<15;x++) {
+				switch(map[y][x]) {
+					case 0:
+						break;
+					case 1:
+						Tile block = new Tile(x,y,"block1",screenGraphics);
+						break;
+					case 2:
+						Tile flower1 = new Tile(x,y,"flower1",screenGraphics);
+						break;
+					case 3:
+						Tile flower2 = new Tile(x,y,"flower2",screenGraphics);
+						break;
+				}
+			};
+		}
+	}
+	
+	public void drawMap() {
+		drawTile();
+	}
 	public void drawPlayer() {
 		screenGraphics.setFont(new Font("Default", Font.BOLD, 20));
 		screenGraphics.drawString(Integer.toString(cnt), 50, 50);
@@ -175,5 +194,7 @@ public class GamingView extends JFrame implements Runnable{
 		}else screenGraphics.drawImage(img, x - ( width * 0 ), y, this); //케릭터가 움직이지 않으면 정지한 케릭터를 그립니다.
 	}
 	
-	
+//	public static void main(String[] ar){
+//		GamingView gv = new GamingView();
+//	}
 }

@@ -42,7 +42,8 @@ public class WaitRoomFrame  extends JFrame {
 		setContentPane(waitPanel);
 		c = getContentPane();
 		c.setLayout(null);
-		setBounds(100, 100, 998, 783);
+		setBounds(100, 100, 1013, 793);
+		//setBounds(100, 100, 998, 783);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(40, 380, 480, 260);
@@ -108,15 +109,14 @@ public class WaitRoomFrame  extends JFrame {
 	                if(e.getSource()==startGameBtn) {
 	                	setVisible(false);
 	                	
-	                	GameFrame gameFrame = new GameFrame();
-	                	gameFrame.setVisible(true);
+//	                	GameFrame gameFrame = new GameFrame();
+//	                	gameFrame.setVisible(true);
 	                	
-//	                	GamingView game = new GamingView();
-//	                	game.setVisible(true);
+	                	GamingView game = new GamingView();
+	                	game.setVisible(true);
 	                			
 	                }
 			}
-	
 		}
 
 

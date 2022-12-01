@@ -45,9 +45,6 @@ public class JavaGameClientMain extends JFrame {
 					JavaGameClientMain frame = new JavaGameClientMain();
 					frame.setVisible(true);
 					
-//					WaitRoomFrame waitFrame = new WaitRoomFrame("미혜");
-//                	waitFrame.setVisible(true);
-//                	waitFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -60,7 +57,8 @@ public class JavaGameClientMain extends JFrame {
 	 */
 	public JavaGameClientMain() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1000, 750);
+		setBounds(100, 100, 1015, 760);
+		//setBounds(100, 100, 1000, 750);
 		setResizable(false); // 창의 크기를 변경하지 못하게
 		
 		contentPane = new JPanel() {
