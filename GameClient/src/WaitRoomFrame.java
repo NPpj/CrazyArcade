@@ -18,6 +18,8 @@ import javax.swing.text.StyledDocument;
 public class WaitRoomFrame  extends JFrame {
 	private WaitPanel waitPanel = new WaitPanel();
 	private Container c;
+	private ListenNetwork net;
+	
 	private JButton startGameBtn;
 	JTextPane textArea;
 	private JTextField txtInput;
@@ -32,10 +34,11 @@ public class WaitRoomFrame  extends JFrame {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
-	public WaitRoomFrame(String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+	public WaitRoomFrame(String userName, ObjectInputStream ois, ObjectOutputStream oos, ListenNetwork net) {
 		this.userName=userName;
 		this.ois = ois;
 		this.oos= oos;
+		this.net=net;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
 		setTitle("Game");
@@ -62,12 +65,10 @@ public class WaitRoomFrame  extends JFrame {
 		c.add(txtInput);
 		txtInput.setColumns(10);
 		
-		ListenNetwork net = new ListenNetwork();
-		net.start();
+		
 		TextSendAction action = new TextSendAction();
 		txtInput.addActionListener(action);
 		txtInput.requestFocus();
-
 		
 	
 	}
@@ -134,106 +135,19 @@ public class WaitRoomFrame  extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// Send button을 누르거나 메시지 입력하고 Enter key 치면
 				if (e.getSource() == txtInput) {
-					String msg = null;
-					 msg = String.format("[%s] %s\n", userName, txtInput.getText());
-//					msg = txtInput.getText();
-//					SendMessage(msg);
-					AppendText(msg);
+					
+                	ChatMsg obcm = new ChatMsg(userName, "200", txtInput.getText());
+        			SendObject(obcm);
 					
 					txtInput.setText(""); // 메세지를 보내고 나면 메세지 쓰는창을 비운다.
 					txtInput.requestFocus(); // 메세지를 보내고 커서를 다시 텍스트 필드로 위치시킨다
-					if (msg.contains("/exit")) // 종료 처리
+					if (txtInput.getText().contains("/exit")) // 종료 처리
 						System.exit(0);
 				}
 			}
 		}
 		
 		
-		// 화면에 출력
-		public void AppendText(String msg) {
-			// textArea.append(msg + "\n");
-			//AppendIcon(icon1);
-			msg = msg.trim(); // 앞뒤 blank와 \n을 제거한다.
-			int len = textArea.getDocument().getLength();
-			// 끝으로 이동
-			textArea.setCaretPosition(len);
-			textArea.replaceSelection(msg + "\n");
-		}
-		
-		// Server에게 network으로 전송
-		public void SendMessage(String msg) {
-			try {
-				ChatMsg obcm = new ChatMsg(userName, "200", msg);
-				oos.writeObject(obcm);
-			} catch (IOException e) {
-				// AppendText("dos.write() error");
-				AppendText("oos.writeObject() error");
-				try {
-//					dos.close();
-//					dis.close();
-					ois.close();
-					oos.close();
-					socket.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					System.exit(0);
-				}
-			}
-		}
-		
-		// Server Message를 수신해서 화면에 표시
-		class ListenNetwork extends Thread {
-			public void run() {
-				while (true) {
-					try {
-						
-						Object obcm = null;
-						String msg = null;
-						ChatMsg cm;
-						try {
-							obcm = ois.readObject();
-						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							break;
-						}
-						if (obcm == null)
-							break;
-						if (obcm instanceof ChatMsg) {
-							cm = (ChatMsg) obcm;
-							msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
-						} else
-							continue;
-						
-						// code
-						switch (cm.getCode()) {
-							
-							case "200": // chat message
-								AppendText(msg);
-								break;
-							}
-//								case "300": // Image 첨부
-//									AppendText("[" + cm.getId() + "]");
-//									AppendImage(cm.img);
-//									break;
-//								}
-					} catch (IOException e) {
-//								AppendText("ois.readObject() error");
-						try {
-							ois.close();
-							oos.close();
-							socket.close();
-
-							break;
-						} catch (Exception ee) {
-							break;
-						} // catch문 끝
-					} // 바깥 catch문끝
-
-				}
-			}
-		}
 			
 			
 }

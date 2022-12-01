@@ -53,6 +53,7 @@ public class JavaGameServer extends JFrame {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
 			}
 		});
 	}
@@ -317,15 +318,16 @@ public class JavaGameServer extends JFrame {
 						UserName = cm.UserName;
 						UserStatus = "O"; // Online 상태
 						AppendText("새로운 참가자 " + UserName + " 입장.");
+						WriteOneObject(cm);
 					}else if(cm.code.matches("101")) {   // 방만들기 
-						String RoomInfo = cm.getData();
-						AppendText("[방생성] 방장: " + UserName +", "+RoomInfo);
-//						WriteAllObject(cm);
+						String[] RoomInfo = cm.getData().split(" ");
+						AppendText("[방생성] 방장: " + RoomInfo[0] +", 방제목: "+ RoomInfo[1]);
+						WriteAllObject(cm);
 						
 					}else if(cm.code.matches("200")){ // 채팅메시지 
 //						msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
-						AppendText(msg); // server 화면에 출력
-//						WriteAllObject(cm);
+						AppendText(cm.getData()); // server 화면에 출력
+						WriteAllObject(cm);
 					}
 					else if (cm.code.matches("400")) { // logout message 처리
 						Logout();

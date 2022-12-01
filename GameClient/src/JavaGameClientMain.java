@@ -16,6 +16,10 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.awt.event.ActionEvent;
 
 public class JavaGameClientMain extends JFrame {
@@ -25,6 +29,15 @@ public class JavaGameClientMain extends JFrame {
 	private JPasswordField txtUserPassword;
 	private JTextField txtIpAddress;
 	private JTextField txtPortNumber;
+	private ListenNetwork net;
+
+	private String userName;
+
+	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
+	private Socket socket; // 연결소켓
+
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
 	
 	// jw1. 배경 이미지
 	private Image background = new ImageIcon(JavaGameClientMain.class.getResource("/assets/background/login_bg.png")).getImage();
@@ -32,8 +45,8 @@ public class JavaGameClientMain extends JFrame {
 	private static String IP_ADDR = "127.0.0.1";
 	private static String PORT_NUMBER = "30000";
 	
-	String []id = new String[] {"test", "jiwon", "mihye"};
-	String []password = new String[] {"test1234", "jiwon1234", "mihye1234"};
+	String []id = new String[] {"test", "jiwon", "mihye"," "};
+	String []password = new String[] {"test1234", "jiwon1234", "mihye1234"," "};
 	
 	/**
 	 * Launch the application.
@@ -120,6 +133,7 @@ public class JavaGameClientMain extends JFrame {
 		txtUserName.addActionListener(action);
 		txtUserPassword.addActionListener(action);
 		
+		
 	}
 	
 	
@@ -170,11 +184,29 @@ public class JavaGameClientMain extends JFrame {
 			if(!txtUserName.getText().isEmpty() && !txtUserPassword.getText().isEmpty()) {
 				if(checkUserData(txtUserName.getText(), txtUserPassword.getText())) {
 					setVisible(false);
+
+					// 소켓 연결
+					try {
+						socket = new Socket(IP_ADDR, Integer.parseInt(PORT_NUMBER));
+
+						oos = new ObjectOutputStream(socket.getOutputStream());
+						oos.flush();
+						ois = new ObjectInputStream(socket.getInputStream());
+
+
+					} catch (NumberFormatException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						// AppendText("connect error");
+					}
 					
+					// 서버로 부터 받아오는 네트워크 생성 
+					net = new ListenNetwork(ois,oos,socket);
+					net.start();
 					
-					// 로비 frame 열기 
-					LobbyFrame frame = new LobbyFrame(username, ip_addr, port_no);
-					frame.setVisible(true);
+
+					ChatMsg obcm = new ChatMsg(txtUserName.getText(), "100", "Login");
+					SendObject(obcm);
 				}
 				else {
 					
@@ -182,6 +214,14 @@ public class JavaGameClientMain extends JFrame {
 			} else {
 				
 			}
+		}
+	}
+	
+	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
+		try {
+			oos.writeObject(ob);
+		} catch (IOException e) {
+			System.out.println("SendObject Error");
 		}
 	}
 	

@@ -21,10 +21,12 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
 
 
 public class MakeRoomDialog extends JDialog {
@@ -36,6 +38,8 @@ public class MakeRoomDialog extends JDialog {
 	private JTextField roomTitle;
 	private String userName;
 	private Container c;
+
+	private ListenNetwork net;
 	
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 	private Socket socket; // 연결소켓
@@ -48,11 +52,12 @@ public class MakeRoomDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public MakeRoomDialog(Container c, String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+	public MakeRoomDialog(Container c, String userName, ListenNetwork net) {
 		this.c=c;
 		this.userName=userName;
-		this.ois = ois;
-		this.oos= oos;
+		this.net=net;
+		this.ois = net.getOIS();
+		this.oos = net.getOOS();
 		setBounds(300, 300, 450, 350);
 		getContentPane().setLayout(new BorderLayout());
 		makeRoomPanel.setLayout(null);
@@ -120,17 +125,19 @@ public class MakeRoomDialog extends JDialog {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	                if(e.getSource()==okBtn) {
-	                	String RoomInfo = "Title: "+roomTitle.getText()+", Password: "+roomPassword.getText();
+	                	String RoomInfo = roomTitle.getText()+" " +roomPassword.getText();
 
+	                	//방 정보 서버로 넘기기 
 	                	ChatMsg obcm = new ChatMsg(userName, "101", RoomInfo);
 	        			SendObject(obcm);
-	        			
+	                	
+	             
 	                	MakeRoomDialog.this.dispose();
 	                	
 
-//						대기방 열기 
-	                	WaitRoomFrame waitFrame = new WaitRoomFrame(userName,ois,oos);
-	                	waitFrame.setVisible(true);
+////						대기방 열기 
+//	                	WaitRoomFrame waitFrame = new WaitRoomFrame(userName,ois,oos,net);
+//	                	waitFrame.setVisible(true);
 	                	
 	                	
 	                }	
@@ -170,6 +177,7 @@ public class MakeRoomDialog extends JDialog {
 	        
 	        getContentPane().setCursor(cursor);
 	    }
+		
 	
 		
 		

@@ -26,7 +26,6 @@ class ChatMsg implements Serializable {
 		this.code = code;
 	}
 
-
 	public String getData() {
 		return data;
 	}
