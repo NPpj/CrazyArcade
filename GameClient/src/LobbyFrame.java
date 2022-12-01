@@ -96,7 +96,7 @@ public class LobbyFrame extends JFrame {
 					JavaGameClientMain.class.getResource("/assets/lobby/btn_makeRoom.png"));
 			JButton makeRoomBtn = new JButton(makeRoomImage);
 			makeRoomBtn.setSize(180, 36);
-			makeRoomBtn.setLocation(30, 30);
+			makeRoomBtn.setLocation(30, 70);
 			add(makeRoomBtn);
 
 			makeRoomBtn.addActionListener(new ActionListener() {

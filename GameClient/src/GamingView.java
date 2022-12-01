@@ -1,4 +1,6 @@
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -11,6 +13,7 @@ public class GamingView extends JFrame implements Runnable{
 	private Image screenImage;
 	private Graphics screenGraphics;
 	private Graphics img_g; // 이중 버퍼림 위함
+	private Container c;
 	
 	private Thread th;
 	private int cnt; // 무한루프를 카운터 하기 위한 변수
@@ -18,12 +21,39 @@ public class GamingView extends JFrame implements Runnable{
 	public static final int PLAYER_LEFT_RIGHT_MOVING_FRAME = 8;
 	public static final int PLAYER_UP_DOWN_MOVING_FRAME = 6;
 	
-	private Image background = new ImageIcon(GamingView.class.getResource("/assets/background/play_bg.png"))
-			.getImage();
+	private ImageIcon backgroundIcon = new ImageIcon(JavaGameClientMain.class.getResource("/assets/game/GameBackGround.png"));
+	private Image backgroundImage  = backgroundIcon.getImage(); //이미지 객체
+	
+	private Image background = backgroundImage;
 	
 	private KeyListener keyListener;
 	public static GamePlayer player = new GamePlayer();
+	//블록 크기 
+	public static final int BLOCK_W = 50;
+	public static final int BLOCK_H = 60;
+	public static final int GRASS_W = 50;
+	public static final int GRASS_H = 50;
+	public static final int FLOWER_W = 60;
+	public static final int FLOWER_H = 70;
 	
+	private int [][] map = {
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1}
+	};
+		
+
+
 	// 생성자
 	public GamingView() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
@@ -33,11 +63,33 @@ public class GamingView extends JFrame implements Runnable{
 		setLocationRelativeTo(null);
 		//setSize(998,773);
 		setVisible(true);
+		c = getContentPane();
 		
 		keyListener = new KeyListener();
 		// 키 리스너 생성
 		addKeyListener(keyListener);
 		
+
+		// 초기 맵 깔기 
+		for(int y=12; y>=0; y--) {
+			for(int x=0; x<15;x++) {
+				switch(map[y][x]) {
+				case 0:
+					break;
+				case 1:
+					Tile block = new Tile(x,y,BLOCK_W,BLOCK_H,"상자",c);
+					break;
+				case 2:
+					Tile flower1 = new Tile(x,y,FLOWER_W,FLOWER_H,"꽃1",c);
+					break;
+				case 3:
+					Tile flower2 = new Tile(x,y,FLOWER_W,FLOWER_H,"꽃2",c);
+					break;
+			}
+			};
+		
+		}
+//		
 		// 플레이어 초기 설정
 		player.init(400,300,"down");
 		start();

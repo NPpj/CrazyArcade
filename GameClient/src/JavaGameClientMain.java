@@ -27,7 +27,7 @@ public class JavaGameClientMain extends JFrame {
 	private JTextField txtPortNumber;
 	
 	// jw1. 배경 이미지
-	private Image background = new ImageIcon(JavaGameClientMain.class.getResource("/assets/login/background.png")).getImage();
+	private Image background = new ImageIcon(JavaGameClientMain.class.getResource("/assets/background/login_bg.png")).getImage();
 	
 	private static String IP_ADDR = "127.0.0.1";
 	private static String PORT_NUMBER = "30000";
