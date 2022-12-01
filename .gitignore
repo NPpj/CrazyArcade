@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-/.metadata/
-=======
-# Created by https://www.toptal.com/developers/gitignore/api/java,windows,eclipse
-# Edit at https://www.toptal.com/developers/gitignore?templates=java,windows,eclipse
+# Created by https://www.toptal.com/developers/gitignore/api/eclipse,java,windows,macos
+# Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,java,windows,macos
 
 ### Eclipse ###
 .metadata
@@ -96,6 +93,39 @@ local.properties
 hs_err_pid*
 replay_pid*
 
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -122,5 +152,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/java,windows,eclipse
->>>>>>> b1cf98d917fb690e2f585a87dc8cc54623490c2f
+# End of https://www.toptal.com/developers/gitignore/api/eclipse,java,windows,macos

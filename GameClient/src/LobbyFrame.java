@@ -32,7 +32,8 @@ public class LobbyFrame extends JFrame{
 		setContentPane(lobby);
 		c = getContentPane();
 		c.setLayout(null);
-		setBounds(100, 100, 1000, 750);
+		setBounds(100, 100, 1015, 760);
+		//setBounds(100, 100, 1000, 750);
 
 		customCursor();
 		setVisible(true);
@@ -57,7 +58,7 @@ public class LobbyFrame extends JFrame{
 		public LobbyPanel() {
 			// 방만들기 버튼
 			ImageIcon makeRoomImage = new ImageIcon(
-					JavaGameClientMain.class.getResource("/assets/lobby/btn_makeRoom.png"));
+				JavaGameClientMain.class.getResource("/assets/lobby/btn_makeRoom.png"));
 			JButton makeRoomBtn = new JButton(makeRoomImage);
 			makeRoomBtn.setSize(180, 36);
 			makeRoomBtn.setLocation(30, 35);
