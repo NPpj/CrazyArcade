@@ -7,6 +7,7 @@ import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.ImageObserver;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -18,6 +19,14 @@ import java.util.Timer;
 import java.awt.Color;
 
 public class GamingView extends JFrame implements Runnable{
+	private ListenNetwork net;
+	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
+	private Socket socket; // 연결소켓
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	//private String userName;
+	GameUser user = GameUser.getInstance();
+	
 	private Image screenImage;
 	public static Graphics screenGraphics;
 	private Graphics img_g; // 이중 버퍼림 위함
@@ -25,7 +34,6 @@ public class GamingView extends JFrame implements Runnable{
 	
 	private Thread th;
 	public static int cnt; // 무한루프를 카운터 하기 위한 변수
-	private ListenNetwork net;
 	private ImageObserver observer = this;
 	
 	
@@ -42,13 +50,43 @@ public class GamingView extends JFrame implements Runnable{
 	
 	private KeyListener keyListener;
 	public static GamePlayer player = new GamePlayer();
+	//블록 크기 
+	public static final int BLOCK_W = 50;
+	public static final int BLOCK_H = 60;
+	public static final int GRASS_W = 50;
+	public static final int GRASS_H = 50;
+	public static final int FLOWER_W = 60;
+	public static final int FLOWER_H = 70;
+	
+	private int [][] map = {
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1}
+	};
+	
+	/* 
+	 * //방 정보 서버로 넘기기 -> 캐릭터 움직일 때 마다.
+	      ChatMsg obcm = new ChatMsg(userName, "101", RoomInfo);
+	      SendObject(obcm);
+	 * */
 
-	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
-	private Socket socket; // 연결소켓
-
-	private String userName;
-	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
+		try {
+			oos.writeObject(ob);
+		} catch (IOException e) {
+			System.out.println("SendObject Error");
+		}
+	}	
 	
 	private String bubble_xy;
 	
@@ -77,10 +115,10 @@ public class GamingView extends JFrame implements Runnable{
 	
 	
 	// 생성자
-	public GamingView(String userName, ListenNetwork net) {
+	public GamingView() {
+		this.net = net;
 		this.ois = net.getOIS();
-		this.oos = net.getOOS();
-		
+		this.oos= net.getOOS();
 		
 		getContentPane().setBackground(new Color(255, 255, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
@@ -115,6 +153,11 @@ public class GamingView extends JFrame implements Runnable{
 			try {
 //				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
+				if(keyListener.playerMove) {
+					String PlayerMovingData = player.getDirection();
+					ChatMsg obcm = new ChatMsg(user.getId(), "300", PlayerMovingData);
+					SendObject(obcm);
+				}
 				repaint();
 				Thread.sleep(20);
 				
