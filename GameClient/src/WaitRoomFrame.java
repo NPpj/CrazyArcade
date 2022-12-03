@@ -22,6 +22,7 @@ public class WaitRoomFrame  extends JFrame {
 	//private Container c;
 	String userName;
 	GameUser user = GameUser.getInstance();
+	int roomNum;
 	Boolean isOwner;
 	
 	private ImageIcon backgroundIcon = new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/waitRoom.png"));
@@ -42,10 +43,11 @@ public class WaitRoomFrame  extends JFrame {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
-	public WaitRoomFrame(Boolean isOwner) {
+	public WaitRoomFrame(int roomNum, Boolean isOwner) {
 		this.userName=user.getId();
 		this.ois = user.getNet().getOIS();
 		this.oos= user.getNet().getOOS();
+		this.roomNum = roomNum;
 		this.isOwner = isOwner;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
@@ -69,28 +71,33 @@ public class WaitRoomFrame  extends JFrame {
 		setBounds(100, 100, 1013, 793);
 		//setBounds(100, 100, 998, 783);
 		
-		//게임 시작하기 버튼 
-		ImageIcon startGameIcon =  new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/startBtn.png"));
-		startGameBtn = new JButton(startGameIcon);
-		startGameBtn.setBounds(660, 620, 250,68);
-		contentPane.add(startGameBtn);
-		
-		Myaction action = new Myaction();
-		startGameBtn.addActionListener(action);
+		if(isOwner) {
+			//게임 시작하기 버튼 
+			ImageIcon startGameIcon =  new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/startBtn.png"));
+			startGameBtn = new JButton(startGameIcon);
+			startGameBtn.setBounds(660, 620, 250,68);
+			contentPane.add(startGameBtn);
+			
+			Myaction action = new Myaction();
+			startGameBtn.addActionListener(action);
+		}
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(40, 380, 480, 260);
 		contentPane.add(scrollPane);
 
+		// 채팅 보이는 창
 		textArea = new JTextPane();
+		textArea.setForeground(new Color(255, 255, 255));
+		textArea.setEnabled(false);
 		textArea.setEditable(true);
 		textArea.setBackground(blue);
-		
-		textArea.setFont(new Font("굴림체", Font.PLAIN, 14));
+		textArea.setFont(new Font("굴림체", Font.BOLD, 16));
 		scrollPane.setViewportView(textArea);
 		
-
+		// 채팅 입력창
 		txtInput = new JTextField();
+		txtInput.setForeground(new Color(255, 255, 255));
 		txtInput.setBounds(40,655, 470, 27);
 		txtInput.setBackground(darkBlue);
 		contentPane.add(txtInput);
@@ -100,36 +107,11 @@ public class WaitRoomFrame  extends JFrame {
 		txtInput.addActionListener(action1);
 		txtInput.requestFocus();
 	}
-	/*
-	// 대기방 패널 
-	class WaitPanel extends JPanel{
-		
-		
-		public WaitPanel() {
-			//게임 시작하기 버튼 
-			ImageIcon startGameIcon =  new ImageIcon(JavaGameClientMain.class.getResource("/assets/lobby/startBtn.png"));
-			startGameBtn = new JButton(startGameIcon);
-			startGameBtn.setBounds(660, 620, 250,68);
-			add(startGameBtn);
-			
-			Myaction action = new Myaction();
-			startGameBtn.addActionListener(action);
-		}
-		
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			
-			g.drawImage(backgroundImage,0,0,getWidth(),getHeight(), this);
-		}
-	}*/
 		
 	public void makeWaitingUser(String waitingInfo) {
-		System.out.println("웨이팅인포:"+waitingInfo);
 		String[] result = waitingInfo.split(" "); // 0:몇번째 유저인지, 1:해당 유저 이름
 		int waitingNum = Integer.parseInt(result[0])+1; // 받은 배열은 인덱스가 0부터 시작하기 때문에 +1해줌.
 		String waitingName = result[1];
-		System.out.println("넘:"+waitingNum);
-		System.out.println("이름:"+waitingName);
 		
 		// 게임 방 참가한 유저
 		ImageIcon waitingUserIcon = new ImageIcon(WaitRoomFrame.class.getResource("/assets/player/bazzi/wait.png"));
@@ -141,6 +123,8 @@ public class WaitRoomFrame  extends JFrame {
 	    nameLabel.setFont(name);
 	    nameLabel.setForeground(white); // 글자색
 	    nameLabel.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데로
+	    ImageIcon readyIcon = new ImageIcon(WaitRoomFrame.class.getResource("/assets/readyImg.png")); // 레디이미지
+	    JLabel readyLabel = new JLabel(readyIcon);
 		
 		switch(waitingNum) {
 		case 1:
@@ -151,14 +135,17 @@ public class WaitRoomFrame  extends JFrame {
 		case 2:
 			nameLabel.setBounds(40+114+17, 270, 114, 22);
 			waitingUserLabel.setBounds(200, 184, pWidth, pHeight);
+			readyLabel.setBounds(40+114+17, 294, 114, 22);
 			break;
 		case 3:
 			nameLabel.setBounds(40+114*2+17*2, 270, 114, 22);
 			waitingUserLabel.setBounds(200+pWidth+78, 184, pWidth, pHeight);
+			readyLabel.setBounds(40+114*2+17*2, 294, 114, 22);
 			break;
 		case 4:
 			nameLabel.setBounds(40+114*3+17*3, 270, 114, 22);
 			waitingUserLabel.setBounds(200+pWidth*2+78*2,184, pWidth, pHeight);
+			readyLabel.setBounds(40+114*3+17*3, 294, 114, 22);
 			break;
 		default:
 			System.out.println("WaitingRoomFrame.makeWaitingUser 오류");
@@ -166,6 +153,18 @@ public class WaitRoomFrame  extends JFrame {
 		
 		contentPane.add(nameLabel);
 		contentPane.add(waitingUserLabel);
+		contentPane.add(readyLabel);
+	}
+	
+	// 화면에 출력
+	public void AppendText(String msg) {
+		if(textArea != null) {
+			msg = msg.trim(); // 앞뒤 blank와 \n을 제거한다.
+			int len = textArea.getDocument().getLength();
+			// 끝으로 이동
+			textArea.setCaretPosition(len);
+			textArea.replaceSelection(msg + "\n");
+		}
 	}
 
 	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
@@ -180,13 +179,14 @@ public class WaitRoomFrame  extends JFrame {
 	{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-                if(e.getSource()==startGameBtn) {
-                	setVisible(false);
-//                	
-                	GamingView game = new GamingView();
-                	game.setVisible(true);
-                			
-                }
+			if(e.getSource()==startGameBtn) {
+            	ChatMsg obcm = new ChatMsg(user.getId(), "300", String.valueOf(roomNum));
+    			SendObject(obcm);
+            	
+//    			setVisible(false);
+//            	GamingView game = new GamingView();
+//            	game.setVisible(true);
+            }
 		}
 	}
 	
@@ -197,7 +197,7 @@ public class WaitRoomFrame  extends JFrame {
 			// Send button을 누르거나 메시지 입력하고 Enter key 치면
 			if (e.getSource() == txtInput) {
 				
-            	ChatMsg obcm = new ChatMsg(userName, "200", txtInput.getText());
+            	ChatMsg obcm = new ChatMsg(user.getId(), "200", txtInput.getText());
     			SendObject(obcm);
 				
 				txtInput.setText(""); // 메세지를 보내고 나면 메세지 쓰는창을 비운다.

@@ -136,7 +136,6 @@ public class LobbyFrame extends JFrame{
 		case 1:
 			btnEnterRoom[0].setBounds(36,104,461,159);
 			getContentPane().add(btnEnterRoom[0]);
-			setRoomPos(1);
 			lbl.setBounds(25,120,160,120);
 			tf1.setBounds(220,132,70,38);
 			tf2.setBounds(370,132,100,38);
@@ -144,7 +143,6 @@ public class LobbyFrame extends JFrame{
 		case 2:
 			btnEnterRoom[1].setBounds(507,104,461,159);
 			getContentPane().add(btnEnterRoom[1]);
-			setRoomPos(2);
 			 lbl.setBounds(495,120,160,120);
 			 tf1.setBounds(700,132,70,38);
 			 tf2.setBounds(875,132,70,38);
@@ -152,7 +150,6 @@ public class LobbyFrame extends JFrame{
 		case 3:
 			btnEnterRoom[2].setBounds(36,104+174,461,159);
 			getContentPane().add(btnEnterRoom[2]);
-			setRoomPos(3);
 			 lbl.setBounds(25,120+175,160,120);
 			 tf1.setBounds(220,132+175,70,38);
 			 tf2.setBounds(400,132+175,70,38);
@@ -160,7 +157,6 @@ public class LobbyFrame extends JFrame{
 		case 4:
 			btnEnterRoom[3].setBounds(507,104+175,461,159);
 			getContentPane().add(btnEnterRoom[3]);
-			setRoomPos(4);
 			 lbl.setBounds(495,120+175,160,120);
 			 tf1.setBounds(700,132+175,70,38);
 			 tf2.setBounds(875,132+175,70,38);
@@ -168,7 +164,6 @@ public class LobbyFrame extends JFrame{
 		case 5:
 			btnEnterRoom[4].setBounds(36,104+174*2,461,159);
 			getContentPane().add(btnEnterRoom[4]);
-			setRoomPos(5);
 			 lbl.setBounds(25,120+175*2,160,120);
 			 tf1.setBounds(220,127+175*2,70,38);
 			 tf2.setBounds(400,127+175*2,70,38);
@@ -176,7 +171,6 @@ public class LobbyFrame extends JFrame{
 		case 6:
 			btnEnterRoom[5].setBounds(507,104+175*2,462,459);
 			getContentPane().add(btnEnterRoom[5]);
-			setRoomPos(6);
 			 lbl.setBounds(495,120+175*2,160,120);
 			 tf1.setBounds(700,127+175*2,70,38);
 			 tf2.setBounds(875,127+175*2,70,38);

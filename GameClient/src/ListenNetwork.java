@@ -2,50 +2,38 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 import javax.swing.JTextPane;
 
 class ListenNetwork extends Thread {
-
+	GameUser user = GameUser.getInstance();
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 	private Socket socket; // 연결소켓
 	JTextPane textArea;
 	LobbyFrame lobbyFrame;
 	WaitRoomFrame waitRoomFrame;
-	
-	
+	GamingView gamingView;
+
 	public ListenNetwork(ObjectInputStream ois, ObjectOutputStream oos, Socket socket) {
-		this.ois=ois;
+		this.ois = ois;
 		this.oos = oos;
-		this.socket=socket;
+		this.socket = socket;
 	}
-	
+
 	public ObjectInputStream getOIS() {
 		return this.ois;
 	}
-	
+
 	public ObjectOutputStream getOOS() {
 		return this.oos;
 	}
 
-	// 화면에 출력
-	public void AppendText(String msg) {
-		if(textArea != null) {
-			msg = msg.trim(); // 앞뒤 blank와 \n을 제거한다.
-			int len = textArea.getDocument().getLength();
-			// 끝으로 이동
-			textArea.setCaretPosition(len);
-			textArea.replaceSelection(msg + "\n");
-		}
-		
-	}
-	
-	
 	public void run() {
 		while (true) {
 			try {
-				
+
 				Object obcm = null;
 				String msg = null;
 				ChatMsg cm;
@@ -63,74 +51,81 @@ class ListenNetwork extends Thread {
 					msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
 				} else
 					continue;
-				
+
 				// code
 				switch (cm.getCode()) {
-					case "100":		// 로그인시 로비 frame 열기 
-						lobbyFrame = new LobbyFrame();
-						lobbyFrame.setVisible(true);
-						break;
-					case "101":    // 방만들기
-						String[] Result101 = cm.getData().split("/"); // [0]:result, [1]:현재 방 주인
-						if(Result101[0].matches("success")) {
-							waitRoomFrame = new WaitRoomFrame(true); // true면 방 주인, false면 방 손님
-							waitRoomFrame.setVisible(true);
-							lobbyFrame.setVisible(false);
-							waitRoomFrame.makeWaitingUser(0+" "+Result101[1]);
-							waitRoomFrame.repaint();
-						}
-						else if(cm.getData().matches("fail")){
-							// 최대 방 수 다이얼로그
-							System.out.println("방을 더이상 만들수 없습니다.");
-						}else {
-							String[] RoomInfo = cm.getData().split(" "); // [0]:roomId, [1]:roomName
-							lobbyFrame.makeRoom(Integer.parseInt(RoomInfo[0]), RoomInfo[1]);
-							lobbyFrame.repaint();
-						}
-						break;
-						
-					case "102": // 방 들어가기
-						String[] Result102 = cm.getData().split("/"); // [0]:result, [1]:현재 방 userList
-						System.out.println("test1 "+cm.getData().toString());
-						String UserListStr = Result102[1].substring(1, Result102[1].length() - 1);
-						System.out.println("test2 "+UserListStr.toString());
-						String[] UserList = UserListStr.split(", "); // userName들
-						
-						if(Result102[0].matches("success")) {
-							lobbyFrame.setVisible(false);
-							waitRoomFrame = new WaitRoomFrame(false);
-							waitRoomFrame.setVisible(true);
-							
-							for(int i=0;i<UserList.length;i++) {
-								waitRoomFrame.makeWaitingUser(i+" "+UserList[i]);
-							}
-							
-							waitRoomFrame.repaint();
-						}
-						else if(Result102[0].matches("fail")){
-							// 방 꽉 찼다는 다이얼로그
-						}
-						else if(Result102[0].matches("change")) { // 이미 방에 들어가있는 유저라면
-							for(int i=0;i<UserList.length;i++) {
-								waitRoomFrame.makeWaitingUser(i+" "+UserList[i]);
-								System.out.println("실행:"+i+" "+UserList[i]);
-							}
-							waitRoomFrame.repaint();
-						}
-						else {
-							System.out.println("102 잘못된 Result");
-						}
-					case "200": // chat message
-						AppendText(msg);
-						break;
+				case "100": // 로그인시 로비 frame 열기
+					lobbyFrame = new LobbyFrame();
+					lobbyFrame.setVisible(true);
+					break;
+				case "101": // 방만들기
+					String[] Result101 = cm.getData().split("/"); // [0]:result, [1]:방 id [2]: 현재 방 주인
+					if (Result101[0].matches("success")) {
+						waitRoomFrame = new WaitRoomFrame(Integer.parseInt(Result101[1]), true); // 방 id와 방장여부 넘겨줌. true면 방 주인, false면 방 손님
+						waitRoomFrame.setVisible(true);
+						lobbyFrame.setVisible(false);
+						waitRoomFrame.makeWaitingUser(0 + " " + Result101[2]);
+						waitRoomFrame.repaint();
 					}
-//						case "300": // Image 첨부
-//							AppendText("[" + cm.getId() + "]");
-//							AppendImage(cm.img);
-//							break;
-//						}
+					else if (cm.getData().matches("fail")) {
+						// 최대 방 수 다이얼로그
+						System.out.println("방을 더이상 만들수 없습니다.");
+					}
+					else {
+						String[] RoomInfo = cm.getData().split(" "); // [0]:roomId, [1]:roomName
+						lobbyFrame.makeRoom(Integer.parseInt(RoomInfo[0]), RoomInfo[1]);
+						lobbyFrame.repaint();
+					}
+					break;
+
+				case "102": // 방 들어가기
+					String[] Result102 = cm.getData().split("/"); // [0]:result, [1]:방 id, [2]:현재 방 userList
+					String UserListStr = Result102[2].substring(1, Result102[2].length() - 1);
+					String[] UserList = UserListStr.split(", "); // userName들
+
+					if (Result102[0].matches("success")) {
+						lobbyFrame.setVisible(false);
+						waitRoomFrame = new WaitRoomFrame(Integer.parseInt(Result102[1]), false); // 방 id와 userList, 방장인지 여부
+						waitRoomFrame.setVisible(true);
+
+						for (int i = 0; i < UserList.length; i++) {
+							waitRoomFrame.makeWaitingUser(i + " " + UserList[i]); // ex. 0번째 유저, 0번째 유저 이름
+						}
+
+						waitRoomFrame.repaint();
+					} else if (Result102[0].matches("fail")) {
+						// 방 꽉 찼다는 다이얼로그
+					} else if (Result102[0].matches("change")) { // 이미 방에 들어가있는 유저라면
+						for (int i = 0; i < UserList.length; i++) {
+							waitRoomFrame.makeWaitingUser(i + " " + UserList[i]);
+						}
+						waitRoomFrame.repaint();
+					} else {
+						System.out.println("102 잘못된 Result");
+					}
+				case "200": // chat message
+					waitRoomFrame.AppendText(msg);
+					break;
+					
+				case "300": // Image 첨부
+					String[] Result300 = cm.getData().split("/"); // [0]:roomId [1]:현재 방 userList
+					String UserListStr300 = Result300[1].substring(1, Result300[1].length() - 1);
+					String[] UserList300 = UserListStr300.split(", "); // userName들
+					int userIndex = Arrays.asList(UserList300).indexOf(user.getId()); // 자기가 방에 몇번째로 들어온 user인지
+					
+					gamingView = new GamingView(Integer.parseInt(Result300[0]), userIndex);
+					gamingView.setVisible(true);
+					waitRoomFrame.setVisible(false);
+					
+//					for (int i = 0; i < UserList300.length; i++) {
+//						gamingView.makeGamingUser(i + " " + UserList300[i]);
+//					}
+					
+					gamingView.repaint();
+					break;
+				}
 			} catch (IOException e) {
-						AppendText("ois.readObject() error Net");
+				System.out.println("ois.readObject() error Net");
 				try {
 					ois.close();
 					oos.close();
@@ -144,9 +139,9 @@ class ListenNetwork extends Thread {
 
 		}
 	}
-	
+
 	public void setJTextPane(JTextPane textArea) {
-		this.textArea=textArea;
-		
+		this.textArea = textArea;
+
 	}
 }

@@ -36,7 +36,6 @@ public class GamingView extends JFrame implements Runnable{
 	public static int cnt; // 무한루프를 카운터 하기 위한 변수
 	private ImageObserver observer = this;
 	
-	
 	public static final int PLAYER_LEFT_RIGHT_MOVING_FRAME = 8;
 	public static final int PLAYER_UP_DOWN_MOVING_FRAME = 6;
 	
@@ -50,29 +49,18 @@ public class GamingView extends JFrame implements Runnable{
 	
 	private KeyListener keyListener;
 	public static GamePlayer player = new GamePlayer();
-	//블록 크기 
+	
+	// 초기 플레이어 x, y 좌표
+	private int[] init_X = {225, 275, 480, 530};
+	private int[] init_Y = {790, 790, 790, 790};
+	
+	// 블록 크기 
 	public static final int BLOCK_W = 50;
 	public static final int BLOCK_H = 60;
 	public static final int GRASS_W = 50;
 	public static final int GRASS_H = 50;
 	public static final int FLOWER_W = 60;
 	public static final int FLOWER_H = 70;
-	
-	private int [][] map = {
-			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
-			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
-			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
-			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
-			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
-			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
-			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
-			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
-			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
-			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
-			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
-			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
-			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1}
-	};
 	
 	/* 
 	 * //방 정보 서버로 넘기기 -> 캐릭터 움직일 때 마다.
@@ -109,14 +97,12 @@ public class GamingView extends JFrame implements Runnable{
 		Item_XY.add("13,11,3");
 	}
 	
-	
 	// space바 누른 키 저장
 	public static ArrayList<String> Bubble_XY = new ArrayList();
 	
-	
 	// 생성자
-	public GamingView() {
-		this.net = net;
+	public GamingView(int roomNum, int userIndex) {
+		this.net = user.getNet();
 		this.ois = net.getOIS();
 		this.oos= net.getOOS();
 		
@@ -134,9 +120,8 @@ public class GamingView extends JFrame implements Runnable{
 		addKeyListener(keyListener);
 		
 		// 플레이어 초기 설정
-		player.init(500,400,"down");
+		player.init(init_X[userIndex], init_Y[userIndex], "down");
 		setItemPos();
-
 		
 		start();
 	}
@@ -306,14 +291,14 @@ public class GamingView extends JFrame implements Runnable{
 	}
 	
 	// 물줄기 그리기 
-		public void drawLine() {
-			for(int i=0;i<Bubble_XY.size();i++) {
-				String str = Bubble_XY.get(i);
-				String[] xy = Bubble_XY.get(i).split(",");
-				Wave wave = new Wave(Integer.parseInt(xy[0]),Integer.parseInt(xy[1]),screenGraphics,cnt,observer);
-				wave.drawImage();
-			}
+	public void drawLine() {
+		for(int i=0;i<Bubble_XY.size();i++) {
+			String str = Bubble_XY.get(i);
+			String[] xy = Bubble_XY.get(i).split(",");
+			Wave wave = new Wave(Integer.parseInt(xy[0]),Integer.parseInt(xy[1]),screenGraphics,cnt,observer);
+			wave.drawImage();
 		}
+	}
 	
 	// 블록 깨기
 	public void breakBlock(int x, int y) {

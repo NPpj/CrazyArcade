@@ -2,6 +2,8 @@
 // ChatMsg.java 채팅 메시지 ObjectStream 용.
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 
 class ChatMsg implements Serializable {
@@ -9,6 +11,7 @@ class ChatMsg implements Serializable {
 	public String code; // 100:로그인, 101:방만들기, 200:채팅메시지, 300:Keyboard Event, 400: Mouse Event
 	public String UserName;
 	public String data;
+	public List<String> list;
 	//public KeyboardEvent key_e;
 	public MouseEvent mouse_e;
 	

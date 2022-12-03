@@ -21,9 +21,18 @@ public class RoomManager {
 		return room;
 	}
 	
+	public static int whereInUser(String userName) {
+		for(int i=0; i<roomList.size(); i++) {
+			if(roomList.get(i).isUser(userName))
+				return i+1; // 방 번호는 1부터 시작.
+		}
+		return -1;
+	}
+	
 	public static GameRoom getGameRoom(String roomIdStr) {
-		int roomId = Integer.parseInt(roomIdStr);
-		return roomList.get(roomId-1);
+		int roomId = (Integer.parseInt(roomIdStr))-1; // 방 번호는 1부터 시작, 인덱스는 0부터 시작
+		System.out.println("GameRoomId : "+roomId);
+		return roomList.get(roomId);
 	}
 	
 	public static int getRoomListSize() {

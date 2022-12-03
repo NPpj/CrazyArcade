@@ -7,15 +7,25 @@ public class GameRoom {
 	private String roomOwner;
 	private String roomName;
 	private Boolean isFull;
-	
+	private Boolean isPlaying;
+
 	public GameRoom(int roomId, String roomOwner, String roomName) {
 		this.roomId = roomId;
 		this.roomOwner = roomOwner;
 		this.roomName = roomName;
 		this.isFull = false;
+		this.isPlaying = false;
+		
 		userList = new ArrayList();
 		userList.add(roomOwner);
 		System.out.println("룸 생성 id: "+this.roomId+" owner: "+this.roomOwner+" name: "+this.roomName);
+	}
+	
+	public Boolean isUser(String userName) {
+		if(userList.contains(userName))
+			return true;
+		else
+			return false;
 	}
 	
 	public Boolean isFullRoom() {
@@ -68,5 +78,14 @@ public class GameRoom {
 
 	public void setRoomName(String roomName) {
 		this.roomName = roomName;
+	}
+	
+
+	public Boolean getIsPlaying() {
+		return isPlaying;
+	}
+
+	public void setIsPlaying(Boolean isPlaying) {
+		this.isPlaying = isPlaying;
 	}
 }
