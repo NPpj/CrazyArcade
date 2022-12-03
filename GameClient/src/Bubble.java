@@ -11,7 +11,7 @@ public class Bubble extends addModel{
 	private int y;
 	
 	public Bubble(int x, int y, Graphics g, int cnt, ImageObserver observer) {
-		super(x,y,56,54,g);
+		super(Tile.START_W +Tile.BLOCK_W*x, Tile.START_H+Tile.BLOCK_H*y,56,54,g);
 		
 		this.observer=observer;
 		this.cnt=cnt;

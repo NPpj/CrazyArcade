@@ -17,7 +17,7 @@ public class Wave extends addModel{
 	private Image bubble;
 	
 	public Wave(int x, int y, Graphics g,int cnt, ImageObserver observer) {
-		super(x,y,52,52,g);
+		super(Tile.START_W +Tile.BLOCK_W*x, Tile.START_H+Tile.BLOCK_H*y,52,52,g);
 		
 		this.observer=observer;
 		this.cnt=cnt;

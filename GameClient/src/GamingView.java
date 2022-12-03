@@ -35,7 +35,6 @@ public class GamingView extends JFrame implements Runnable {
 	private Thread th;
 	public static int cnt; // 무한루프를 카운터 하기 위한 변수
 	private ImageObserver observer = this;
-	private boolean bubblePop = false;
 
 	public static final int PLAYER_LEFT_RIGHT_MOVING_FRAME = 8;
 	public static final int PLAYER_UP_DOWN_MOVING_FRAME = 6;
@@ -50,22 +49,6 @@ public class GamingView extends JFrame implements Runnable {
 
 	private KeyListener keyListener;
 	public static GamePlayer player = new GamePlayer();
-	
-	// 블록 크기
-	public static final int BLOCK_W = 50;
-	public static final int BLOCK_H = 60;
-	public static final int GRASS_W = 50;
-	public static final int GRASS_H = 50;
-	public static final int FLOWER_W = 60;
-	public static final int FLOWER_H = 70;
-
-	private int[][] map = { { 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1 },
-			{ 0, 2, 3, 2, 0, 0, 2, 3, 2, 0, 0, 2, 3, 2, 0 }, { 0, 3, 2, 3, 0, 0, 3, 2, 3, 0, 0, 3, 2, 3, 0 },
-			{ 0, 2, 3, 2, 0, 0, 2, 3, 2, 0, 0, 2, 3, 2, 0 }, { 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1 },
-			{ 0, 2, 3, 2, 0, 0, 2, 3, 2, 0, 0, 2, 3, 2, 0 }, { 0, 3, 2, 3, 0, 0, 3, 2, 3, 0, 0, 3, 2, 3, 0 },
-			{ 0, 2, 3, 2, 0, 0, 2, 3, 2, 0, 0, 2, 3, 2, 0 }, { 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1 },
-			{ 0, 2, 3, 2, 0, 0, 2, 3, 2, 0, 0, 2, 3, 2, 0 }, { 0, 3, 2, 3, 0, 0, 3, 2, 3, 0, 0, 3, 2, 3, 0 },
-			{ 0, 2, 3, 2, 0, 0, 2, 3, 2, 0, 0, 2, 3, 2, 0 }, { 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1 } };
 
 	/*
 	 * //방 정보 서버로 넘기기 -> 캐릭터 움직일 때 마다. ChatMsg obcm = new ChatMsg(userName, "101",
@@ -80,11 +63,12 @@ public class GamingView extends JFrame implements Runnable {
 		}
 	}
 
-	private String bubble_xy;
-
+	// 물풍선 객체 저장
 	public static ArrayList<String> Item_XY = new ArrayList();
+	public static ArrayList<Bubble> bubbleList = new ArrayList();
+	public static ArrayList<Wave> waveList = new ArrayList();
 
-	// 아이템 위치 
+	// 아이템 위치
 	public void setItemPos() {
 		Item_XY.add("2,2,1");
 		Item_XY.add("1,3,2");
@@ -103,7 +87,7 @@ public class GamingView extends JFrame implements Runnable {
 		Item_XY.add("13,11,3");
 	}
 
-	// space바 누른 키 저장
+	// space바 누른 키 위치 저장
 	public static ArrayList<String> Bubble_XY = new ArrayList();
 
 	// 생성자
@@ -127,8 +111,11 @@ public class GamingView extends JFrame implements Runnable {
 
 		// 플레이어 초기 설정
 		player.init(500, 400, "down");
+
+		// 초기 아이템 위치 설정
 		setItemPos();
 
+		// 스레드 시작
 		start();
 	}
 
@@ -188,14 +175,15 @@ public class GamingView extends JFrame implements Runnable {
 			}
 		}
 
+		// 꽃, 박스 그리기
 		drawTile();
 
 		drawItems();
 		eatItem();
 
-		
-		drawBuble();
-		
+		addBubble();
+
+		// player 상태에 따른 이미지 변경
 		if (player.getPlayerState() == "live")
 			drawPlayer();
 		else if (player.getPlayerState() == "trap")
@@ -204,7 +192,6 @@ public class GamingView extends JFrame implements Runnable {
 			diePlayer();
 			player.setPlayerState("dispose");
 		}
-		
 
 		this.repaint();
 	}
@@ -294,45 +281,52 @@ public class GamingView extends JFrame implements Runnable {
 			screenGraphics.drawImage(img, x - (width * 0), y, this); // 케릭터가 움직이지 않으면 정지한 케릭터를 그립니다.
 	}
 
-	// 물풍선 그리기
-	public void drawBuble() {
+	public void addBubble() {
 		for (int i = 0; i < Bubble_XY.size(); i++) {
 			String str = Bubble_XY.get(i);
 			String[] xy = Bubble_XY.get(i).split(",");
-			int x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
-			int y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]);
 
+			int x = Integer.parseInt(xy[0]);
+			int y = Integer.parseInt(xy[1]);
+
+			// 물풍선 객체 추가
 			Bubble bubble = new Bubble(x, y, screenGraphics, cnt, observer);
+			bubbleList.add(bubble);
 			bubble.drawImage();
 
-			Timer m_timer = new Timer();
-			TimerTask m_task = new TimerTask() {
-				public void run() {
-					breakBlock(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
-					bubblePop=true;
-					player.downBubbleNum();
-					
-					Bubble_XY.remove(str);
-				}
+			Timer timer=new Timer();
+			TimerTask task=new TimerTask(){
+			    @Override
+			    public void run() {
+			    	Bubble_XY.remove(str);
+			    	breakBlock(x,y);
+			    	player.downBubbleNum();
+			    }	
 			};
-			m_timer.schedule(m_task, 2000);
+			timer.schedule(task, 2000); //실행 Task, 1초뒤 실행
+			
+//			// 물줄기 객체 추가
+//			Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
+//			waveList.add(wave);
+//			wave.drawImage();
+
 		}
 	}
 
+
 	// 물줄기 그리기
-	public void drawLine() {
-		for (int i = 0; i < Bubble_XY.size(); i++) {
-			String str = Bubble_XY.get(i);
-			String[] xy = Bubble_XY.get(i).split(",");
-			int x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
-			int y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]);
-			Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
-			wave.drawImage();
-			Bubble_XY.remove(str);
-			bubblePop=false;
-//			bubblePop=false;
-		}
-	}
+//	public void drawLine() {
+//		for (int i = 0; i < Bubble_XY.size(); i++) {
+//			String str = Bubble_XY.get(i);
+//			String[] xy = Bubble_XY.get(i).split(",");
+//			int x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
+//			int y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]);
+//			Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
+//			wave.drawImage();
+//			Bubble_XY.remove(str);
+////			bubblePop=false;
+//		}
+//	}
 
 	// 블록 깨기
 	public void breakBlock(int x, int y) {
@@ -346,7 +340,7 @@ public class GamingView extends JFrame implements Runnable {
 				player.map[y - i][x] = 0;
 			if (y + i < 13)
 				player.map[y + i][x] = 0;
-			player.map[y][x]=0;
+			player.map[y][x] = 0;
 		}
 	}
 
@@ -397,7 +391,7 @@ public class GamingView extends JFrame implements Runnable {
 
 	// 죽기
 	public void diePlayer() {
-		DiePlayer die = new DiePlayer(player.getPos_X() - 10, player.getPos_Y()-40, screenGraphics, cnt, observer);
+		DiePlayer die = new DiePlayer(player.getPos_X() - 10, player.getPos_Y() - 40, screenGraphics, cnt, observer);
 		die.drawImage();
 
 	}
@@ -408,6 +402,5 @@ public class GamingView extends JFrame implements Runnable {
 		trap.drawImage();
 
 	}
-
 
 }
