@@ -55,8 +55,10 @@ public class JavaGameClientMain extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JavaGameClientMain frame = new JavaGameClientMain();
-					frame.setVisible(true);
+//					JavaGameClientMain frame = new JavaGameClientMain();
+//					frame.setVisible(true);
+					GamingView view = new GamingView();
+					view.setVisible(true);
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -181,30 +183,31 @@ public class JavaGameClientMain extends JFrame {
 				if(checkUserData(txtUserName.getText(), txtUserPassword.getText())) {
 					setVisible(false);
 
-					// 소켓 연결
-					try {
-						socket = new Socket(IP_ADDR, Integer.parseInt(PORT_NUMBER));
-
-						oos = new ObjectOutputStream(socket.getOutputStream());
-						oos.flush();
-						ois = new ObjectInputStream(socket.getInputStream());
-
-
-					} catch (NumberFormatException | IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						// AppendText("connect error");
-					}
+//					// 소켓 연결
+//					try {
+//						socket = new Socket(IP_ADDR, Integer.parseInt(PORT_NUMBER));
+//
+//						oos = new ObjectOutputStream(socket.getOutputStream());
+//						oos.flush();
+//						ois = new ObjectInputStream(socket.getInputStream());
+//
+//
+//					} catch (NumberFormatException | IOException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//						// AppendText("connect error");
+//					}
+//					
+//					// 서버로 부터 받아오는 네트워크 생성 
+//					net = new ListenNetwork(ois,oos,socket);
+//					net.start();
+//
+//					GameUser user = GameUser.getInstance();
+//					user.init(txtUserName.getText(), net);
+//					
+//					ChatMsg obcm = new ChatMsg(user.getId(), "100", "Login");
+//					SendObject(obcm);
 					
-					// 서버로 부터 받아오는 네트워크 생성 
-					net = new ListenNetwork(ois,oos,socket);
-					net.start();
-
-					GameUser user = GameUser.getInstance();
-					user.init(txtUserName.getText(), net);
-					
-					ChatMsg obcm = new ChatMsg(user.getId(), "100", "Login");
-					SendObject(obcm);
 				}
 				else {
 				}
