@@ -34,9 +34,10 @@ public class MakeRoomDialog extends JDialog {
 	private Image backgroundImage = backgroundIcon.getImage(); // 이미지 객체
 	private JPasswordField roomPassword;
 	private JTextField roomTitle;
-	private String userName;
+	//private String userName;
 	private Container c;
-	private ListenNetwork net;
+	//private ListenNetwork net;
+	GameUser user = GameUser.getInstance();
 	
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 	private Socket socket; // 연결소켓
@@ -47,12 +48,12 @@ public class MakeRoomDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public MakeRoomDialog(Container c, String userName, ListenNetwork net) {
+	public MakeRoomDialog(Container c) {
 		this.c=c;
-		this.userName=userName;
-		this.net=net;
-		this.ois = net.getOIS();
-		this.oos = net.getOOS();
+		//this.userName=userName;
+		//this.net=net;
+		this.ois = user.getNet().getOIS();
+		this.oos = user.getNet().getOOS();
 		setBounds(300, 300, 450, 350);
 		getContentPane().setLayout(new BorderLayout());
 		makeRoomPanel.setLayout(null);
@@ -119,15 +120,14 @@ public class MakeRoomDialog extends JDialog {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	                if(e.getSource()==okBtn) {
-	                	String RoomInfo = roomTitle.getText()+" " +roomPassword.getText();
-
+	                	String RoomInfo = roomTitle.getText()+ " " +roomPassword.getText();
+	                	
 	                	//방 정보 서버로 넘기기 
-	                	ChatMsg obcm = new ChatMsg(userName, "101", RoomInfo);
+	                	ChatMsg obcm = new ChatMsg(user.getId(), "101", RoomInfo);
 	        			SendObject(obcm);
 	                	
 	             
 	                	MakeRoomDialog.this.dispose();
-	                	
 
 ////						대기방 열기 
 //	                	WaitRoomFrame waitFrame = new WaitRoomFrame(userName,ois,oos,net);

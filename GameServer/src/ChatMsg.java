@@ -13,8 +13,8 @@ class ChatMsg implements Serializable {
 	public MouseEvent mouse_e;
 	
 	public ChatMsg(String UserName, String code, String msg) {
-		this.code = code;
 		this.UserName = UserName;
+		this.code = code;
 		this.data = msg;
 	}
 	

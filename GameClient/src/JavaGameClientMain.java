@@ -45,8 +45,8 @@ public class JavaGameClientMain extends JFrame {
 	private static String IP_ADDR = "127.0.0.1";
 	private static String PORT_NUMBER = "30000";
 	
-	String []id = new String[] {"test", "jiwon", "mihye"," "};
-	String []password = new String[] {"test1234", "jiwon1234", "mihye1234"," "};
+	String []id = new String[] {"test", "jiwon", "mihye","a"};
+	String []password = new String[] {"test1234", "jiwon1234", "mihye1234","a"};
 	
 	/**
 	 * Launch the application.
@@ -130,8 +130,6 @@ public class JavaGameClientMain extends JFrame {
 		btnConnect.addActionListener(action);
 		txtUserName.addActionListener(action);
 		txtUserPassword.addActionListener(action);
-		
-		
 	}
 	
 	
@@ -202,8 +200,10 @@ public class JavaGameClientMain extends JFrame {
 					net = new ListenNetwork(ois,oos,socket);
 					net.start();
 					
-
-					ChatMsg obcm = new ChatMsg(txtUserName.getText(), "100", "Login");
+					GameUser user = GameUser.getInstance();
+					user.init(txtUserName.getText(), net);
+					
+					ChatMsg obcm = new ChatMsg(user.getId(), "100", "Login");
 					SendObject(obcm);
 				}
 				else {

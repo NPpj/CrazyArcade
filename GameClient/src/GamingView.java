@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -14,6 +15,14 @@ import javax.swing.*;
 import java.awt.Color;
 
 public class GamingView extends JFrame implements Runnable{
+	private ListenNetwork net;
+	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
+	private Socket socket; // 연결소켓
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	//private String userName;
+	GameUser user = GameUser.getInstance();
+	
 	private Image screenImage;
 	private Graphics screenGraphics;
 	private Graphics img_g; // 이중 버퍼림 위함
@@ -55,16 +64,27 @@ public class GamingView extends JFrame implements Runnable{
 			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
 			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1}
 	};
+	
+	/* 
+	 * //방 정보 서버로 넘기기 -> 캐릭터 움직일 때 마다.
+	      ChatMsg obcm = new ChatMsg(userName, "101", RoomInfo);
+	      SendObject(obcm);
+	 * */
 
-	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
-	private Socket socket; // 연결소켓
-
-	private String userName;
-	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
+		try {
+			oos.writeObject(ob);
+		} catch (IOException e) {
+			System.out.println("SendObject Error");
+		}
+	}	
 	
 	// 생성자
-	public GamingView(String userName, ObjectInputStream ois, ObjectOutputStream oos) {
+	public GamingView() {
+		this.net = net;
+		this.ois = net.getOIS();
+		this.oos= net.getOOS();
+		
 		getContentPane().setBackground(new Color(255, 255, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //JFrame이 정상적으로 종료되게
 //		setBounds(100, 100, 1013, 793);
@@ -96,6 +116,11 @@ public class GamingView extends JFrame implements Runnable{
 			try {
 				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
+				if(keyListener.playerMove) {
+					String PlayerMovingData = player.getDirection();
+					ChatMsg obcm = new ChatMsg(user.getId(), "300", PlayerMovingData);
+					SendObject(obcm);
+				}
 				repaint();
 				Thread.sleep(20);
 				cnt++;

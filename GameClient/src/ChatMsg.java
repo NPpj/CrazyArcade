@@ -6,9 +6,9 @@ import javax.swing.ImageIcon;
 
 class ChatMsg implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public String code; // 100:로그인, 200:채팅메시지, 300:Keyboard Event, 400: Mouse Event
-	public String UserName;
-	public String data;
+	private String code; // 100:로그인, 200:채팅메시지, 300:Keyboard Event, 400: Mouse Event
+	private String UserName;
+	private String data;
 	//public KeyboardEvent key_e;
 	public MouseEvent mouse_e;
 	
@@ -17,7 +17,7 @@ class ChatMsg implements Serializable {
 		this.UserName = UserName;
 		this.data = msg;
 	}
-	
+
 	public String getCode() {
 		return code;
 	}
