@@ -62,13 +62,13 @@ public class KeyListener extends KeyAdapter {
 		case KeyEvent.VK_DOWN :
 			pressedKeyDown = true;
 			break;
-		case KeyEvent.VK_SPACE:
+		case KeyEvent.VK_SPACE: // 물풍선 놓기 
 			if(GamingView.player.getBubbleNum() < GamingView.player.getMaxBubbleNum()) {
 				GamingView.player.addBubbleNum();
+				// x,y 는 map 좌표 
 				int x = GamingView.player.getMapX(GamingView.player.getPos_X()-20);
 				int y = GamingView.player.getMapY(GamingView.player.getPos_Y()-10);
-				//스페이지바 누른 좌표
-				GamingView.Bubble_XY.add(String.valueOf(x)+","+String.valueOf(y)+","+"false");
+				GamingView.Bubble_XY.add(String.valueOf(x)+","+String.valueOf(y));
 			}
 			break;
 		}
