@@ -209,7 +209,6 @@ public class JavaGameClientMain extends JFrame {
 //					SendObject(obcm);
 				}
 				else {
-					
 				}
 			} else {
 				

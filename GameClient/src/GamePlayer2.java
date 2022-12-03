@@ -5,23 +5,16 @@ import javax.swing.ImageIcon;
 
 import com.sun.tools.javac.Main;
 
-public class GamePlayer {
-	public GamePlayer() {}
+public class GamePlayer2 {
+	public GamePlayer2() {}
 	
 	public static final int SCREEN_X = 998, SCREEN_Y = 773;
-	public static int PLAYER_MOVE=3;
+	private static final int PLAYER_MOVE=3;
 	
 	private static final int GROUND_START_X=18;
 	private static final int GROUND_START_Y=45;
 	private static final int GROUND_END_X=720;
-	private static final int GROUND_END_Y=800;
-	
-	private int maxBubbleNum = 3;
-	private int bubbleNum = 0;
-	public int waveLen = 1;
-	
-	//물풍선 배열 좌표  
-	public String[] bubbles = new String[maxBubbleNum];
+	private static final int GROUND_END_Y=640;
 	
 	public int [][] map = {
 			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
@@ -40,15 +33,13 @@ public class GamePlayer {
 	};
 	
 	// 이미지 파일
-	private Image playerLeftMove = new ImageIcon(GamePlayer.class.getResource("/assets/player/bazzi/left.png"))
+	private Image playerLeftMove = new ImageIcon(GamePlayer2.class.getResource("/assets/player/bazzi/left.png"))
 			.getImage();
-	private Image playerRightMove = new ImageIcon(GamePlayer.class.getResource("/assets/player/bazzi/right.png"))
+	private Image playerRightMove = new ImageIcon(GamePlayer2.class.getResource("/assets/player/bazzi/right.png"))
 			.getImage();
-	private Image playerUpMove = new ImageIcon(GamePlayer.class.getResource("/assets/player/bazzi/up.png"))
+	private Image playerUpMove = new ImageIcon(GamePlayer2.class.getResource("/assets/player/bazzi/up.png"))
 			.getImage();
-	private Image playerDownMove = new ImageIcon(GamePlayer.class.getResource("/assets/player/bazzi/down.png"))
-			.getImage();
-	public Image pushBubble = new ImageIcon(GamePlayer.class.getResource("/assets/1.png"))
+	private Image playerDownMove = new ImageIcon(GamePlayer2.class.getResource("/assets/player/bazzi/down.png"))
 			.getImage();
 	
 	// 위치
@@ -131,28 +122,24 @@ public class GamePlayer {
 	
 	public void moveToRight() {
 		if(pos_X <= GROUND_END_X && map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0)
-//		if(pos_X <= GROUND_END_X )
 			pos_X += PLAYER_MOVE;
 		
 		state = playerRightMove;
 	}
 	public void moveToLeft() {
 		if(pos_X >= GROUND_START_X && map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0)
-//		if(pos_X >= GROUND_START_X)
 			pos_X -= PLAYER_MOVE;
 		
 		state = playerLeftMove;
 	}
 	public void moveToUp() {
 		if(pos_Y >= GROUND_START_Y && map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0)
-//		if(pos_Y >= GROUND_START_Y)
 			pos_Y -= PLAYER_MOVE;
 		
 		state = playerUpMove;
 	}
 	public void moveToDown() {
 		if(pos_Y <= GROUND_END_Y && map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0 )
-//		if(pos_Y <= GROUND_END_Y)
 			pos_Y += PLAYER_MOVE;
 		
 		state = playerDownMove;
@@ -177,25 +164,8 @@ public class GamePlayer {
 		return i;	
 	}
 	
-	public void addBubbleNum() {
-		this.bubbleNum += 1;
-	}
-	
-	public void downBubbleNum() {
-		this.bubbleNum -= 1;
-	}
-	
-	public int getBubbleNum() {
-		return this.bubbleNum;
-	}
-	
-	public void addMaxBubbleNum() {
-		this.maxBubbleNum+= 1;
-	}
-	
-	public int getMaxBubbleNum() {
-		return this.maxBubbleNum;
-	}
-	
-	
+//	public boolean canGo(String where) {
+//		
+//		
+//	}
 }

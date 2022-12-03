@@ -1,14 +1,26 @@
 
+import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JLabel;
 
 public class KeyListener extends KeyAdapter {
 	public static boolean playerMove = false;
 	private static boolean pressedKeyUp = false;
 	private static boolean pressedKeyDown = false;
 	private static boolean pressedKeyLeft = false;
-	private static boolean pressedKeyRight = false; 
+	private static boolean pressedKeyRight = false;
+	public static int pressedKeySpace_X = 0; 
+	public static int pressedKeySpace_Y = 0; 
+	public static boolean pushSpace= false;
+	private Graphics screenGraphics;
 	
+	public int n =0;
+
+
 	public void keyProcess(){
 		//여기서는 단순 케릭터가 이동하는 좌표 말고도
 		//케릭터의 움직임 여부및 방향을 체크 합니다.
@@ -50,7 +62,19 @@ public class KeyListener extends KeyAdapter {
 		case KeyEvent.VK_DOWN :
 			pressedKeyDown = true;
 			break;
+		case KeyEvent.VK_SPACE:
+			if(GamingView.player.getBubbleNum() < GamingView.player.getMaxBubbleNum()) {
+				GamingView.player.addBubbleNum();
+				int x = GamingView.player.getMapX(GamingView.player.getPos_X());
+//						Tile.START_W + Tile.BLOCK_W*GamingView.player.getMapX(GamingView.player.getPos_X());
+				int y = GamingView.player.getMapY(GamingView.player.getPos_Y());
+//						Tile.START_H + Tile.BLOCK_H*GamingView.player.getMapY(GamingView.player.getPos_Y());
+				GamingView.Bubble_XY.add(x+","+y);
+			}
+			break;
 		}
+		
+		
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -67,8 +91,16 @@ public class KeyListener extends KeyAdapter {
 		case KeyEvent.VK_DOWN :
 			pressedKeyDown = false;
 			break;
+		case KeyEvent.VK_SPACE:
+			pushSpace =false;
+			break;
 		}
 	}
+	
+	public void setScreenGraphics(Graphics screenGraphics) {
+		this.screenGraphics=screenGraphics;
+	}
+	
 	/*
 	// 키 눌렀을 때 실행되도록 하는 곳
 	@Override
