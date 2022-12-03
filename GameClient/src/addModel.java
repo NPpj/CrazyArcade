@@ -45,15 +45,17 @@ public abstract class addModel {
 		g.drawImage(getImage(), x, y, null);
 	}
 	
-	public void drawAllImage(Image img,int x,int y, int cnt, int n,ImageObserver observer) {
+	public void drawAllImage(Image img, int x,int y, int cnt, int n,ImageObserver observer) {
 		if(n==4) {
 			g.setClip(x , y, 56, 54);
+			setWidth(56);
 			if (cnt / 10 %n== 0) g.drawImage(img, x - ( width * 0 ), y, observer);
 			else if(cnt/10%n == 1) g.drawImage(img, x - ( width * 1 ), y, observer);
 			else if(cnt/10%n == 2) g.drawImage(img, x - ( width * 2 ), y, observer);
 			else if(cnt/10%n == 3) g.drawImage(img, x - ( width * 3 ), y, observer);
 		}else if(n==11) {
 			g.setClip(x , y, 52, 52);
+			setWidth(52);
 			if (cnt / 10 %n== 0) g.drawImage(img, x - ( width * 0 ), y, observer);
 			else if(cnt/10%n == 1) g.drawImage(img, x - ( width * 1 ), y, observer);
 			else if(cnt/10%n == 2) g.drawImage(img, x - ( width * 2 ), y, observer);
@@ -67,13 +69,13 @@ public abstract class addModel {
 			else if(cnt/10%n == 10) g.drawImage(img, x - ( width * 10 ), y, observer);
 		}
 		else if(n==3){
-			g.setClip(x , y, 56, 54);
+			g.setClip(x , y,56,70);
 			if (cnt / 10 % 3 == 0) g.drawImage(img, x - ( 56 * 0 ), y, observer);
 			else if(cnt/10% 3 == 1) g.drawImage(img, x - ( 56 * 1 ), y, observer);
 			else if(cnt/10% 3 == 2) g.drawImage(img, x - ( 56 * 0 ), y, observer);
 		}else if(n==12){
-			g.setClip(x,y,8,144);
-			setWidth(85);
+			g.setClip(x,y,88,144);
+			setWidth(88);
 			if (cnt / 10 %n== 0) g.drawImage(img, x - ( width * 0 ), y, observer);
 			else if(cnt/10%n == 1) g.drawImage(img, x - ( width * 1 ), y, observer);
 			else if(cnt/10%n == 2) g.drawImage(img, x - ( width * 2 ), y, observer);

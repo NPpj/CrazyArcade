@@ -57,6 +57,8 @@ public class JavaGameClientMain extends JFrame {
 				try {
 					JavaGameClientMain frame = new JavaGameClientMain();
 					frame.setVisible(true);
+//					GamingView view = new GamingView();
+//					view.setVisible(true);
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -205,6 +207,7 @@ public class JavaGameClientMain extends JFrame {
 					
 					ChatMsg obcm = new ChatMsg(user.getId(), "100", "Login");
 					SendObject(obcm);
+					
 				}
 				else {
 				}

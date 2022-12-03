@@ -65,11 +65,10 @@ public class KeyListener extends KeyAdapter {
 		case KeyEvent.VK_SPACE:
 			if(GamingView.player.getBubbleNum() < GamingView.player.getMaxBubbleNum()) {
 				GamingView.player.addBubbleNum();
-				int x = GamingView.player.getMapX(GamingView.player.getPos_X());
-//						Tile.START_W + Tile.BLOCK_W*GamingView.player.getMapX(GamingView.player.getPos_X());
-				int y = GamingView.player.getMapY(GamingView.player.getPos_Y());
-//						Tile.START_H + Tile.BLOCK_H*GamingView.player.getMapY(GamingView.player.getPos_Y());
-				GamingView.Bubble_XY.add(x+","+y);
+				int x = GamingView.player.getMapX(GamingView.player.getPos_X()-20);
+				int y = GamingView.player.getMapY(GamingView.player.getPos_Y()-10);
+				//스페이지바 누른 좌표
+				GamingView.Bubble_XY.add(String.valueOf(x)+","+String.valueOf(y)+","+"false");
 			}
 			break;
 		}
