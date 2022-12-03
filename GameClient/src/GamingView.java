@@ -122,7 +122,6 @@ public class GamingView extends JFrame implements Runnable {
 
 		// 플레이어 초기 설정
 		player.init(init_X[userIndex], init_Y[userIndex], "down");
-		player.init(500, 400, "down");
 
 		// 초기 아이템 위치 설정
 		setItemPos();
