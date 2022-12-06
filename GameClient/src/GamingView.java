@@ -19,18 +19,14 @@ import java.util.Timer;
 import java.awt.Color;
 
 public class GamingView extends JFrame implements Runnable {
+	GameUser user = GameUser.getInstance();
 	private ListenNetwork net;
-	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
-	private Socket socket; // 연결소켓
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-	// private String userName;
-	GameUser user = GameUser.getInstance();
-
+	
 	private Image screenImage;
 	public static Graphics screenGraphics;
 	private Graphics img_g; // 이중 버퍼림 위함
-	// private Container c;
 
 	private Thread th;
 	public static int cnt; // 무한루프를 카운터 하기 위한 변수
@@ -46,6 +42,8 @@ public class GamingView extends JFrame implements Runnable {
 	private Image backgroundImage = backgroundIcon.getImage(); // 이미지 객체
 
 	private Image background = backgroundImage;
+	
+	public  static Stage stage = new Stage();
 
 	private KeyListener keyListener;
 	public static GamePlayer player = new GamePlayer();
@@ -75,29 +73,29 @@ public class GamingView extends JFrame implements Runnable {
 		}
 	}
 
-	// 물풍선 객체 저장
-	public static ArrayList<String> Item_XY = new ArrayList();
-	public static ArrayList<Bubble> bubbleList = new ArrayList();
-	public static ArrayList<Wave> waveList = new ArrayList();
+//	// 물풍선 객체 저장
+//	public static ArrayList<String> Item_XY = new ArrayList();
+//	public static ArrayList<Bubble> bubbleList = new ArrayList();
+//	public static ArrayList<Wave> waveList = new ArrayList();
 
-	// 아이템 위치
-	public void setItemPos() {
-		Item_XY.add("2,2,1");
-		Item_XY.add("1,3,2");
-		Item_XY.add("8,3,3");
-		Item_XY.add("11,1,1");
-		Item_XY.add("12,3,2");
-		Item_XY.add("1,6,3");
-		Item_XY.add("3,7,1");
-		Item_XY.add("7,6,2");
-		Item_XY.add("11,5,3");
-		Item_XY.add("13,6,1");
-		Item_XY.add("2,10,2");
-		Item_XY.add("1,11,3");
-		Item_XY.add("8,9,1");
-		Item_XY.add("6,11,2");
-		Item_XY.add("13,11,3");
-	}
+//	// 아이템 위치
+//	public void setItemPos() {
+//		Item_XY.add("2,2,1");
+//		Item_XY.add("1,3,2");
+//		Item_XY.add("8,3,3");
+//		Item_XY.add("11,1,1");
+//		Item_XY.add("12,3,2");
+//		Item_XY.add("1,6,3");
+//		Item_XY.add("3,7,1");
+//		Item_XY.add("7,6,2");
+//		Item_XY.add("11,5,3");
+//		Item_XY.add("13,6,1");
+//		Item_XY.add("2,10,2");
+//		Item_XY.add("1,11,3");
+//		Item_XY.add("8,9,1");
+//		Item_XY.add("6,11,2");
+//		Item_XY.add("13,11,3");
+//	}
 	
 	// space바 누른 키 저장
 	public static ArrayList<String> Bubble_XY = new ArrayList();
@@ -107,13 +105,11 @@ public class GamingView extends JFrame implements Runnable {
 		this.ois = net.getOIS();
 		this.oos= net.getOOS();
 		
-		getContentPane().setBackground(new Color(255, 255, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // JFrame이 정상적으로 종료되게
 		setBounds(100, 100, Frame_W, Frame_H);
 		setTitle("CrazyArcade");
 		setResizable(false);
 		setLocationRelativeTo(null);
-		// setSize(998,773);
 		setVisible(true);
 
 		keyListener = new KeyListener();
@@ -123,8 +119,8 @@ public class GamingView extends JFrame implements Runnable {
 		// 플레이어 초기 설정
 		player.init(init_X[userIndex], init_Y[userIndex], "down");
 
-		// 초기 아이템 위치 설정
-		setItemPos();
+		// 맵의 아이템 그려줌
+		stage.start();
 
 		// 스레드 시작
 		start();
@@ -189,8 +185,9 @@ public class GamingView extends JFrame implements Runnable {
 		// 꽃, 박스 그리기
 		drawTile();
 
-		drawItems();
+//		drawItems();
 		eatItem();
+		stage.drawItems(g);
 
 		addBubble();
 
