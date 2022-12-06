@@ -8,7 +8,7 @@ public class Stage implements Runnable{
 	private Image img = null;
 	private int x,y;
 	private ArrayList<Item> itemList = new ArrayList<>(); // 아이템 담을 리스트
-	private Monster boss = new Monster();
+	private Monster boss = null;
 	
 	public ArrayList<Item> getItemList(){
 		return itemList;
@@ -17,6 +17,10 @@ public class Stage implements Runnable{
 	public void makeItems(Item item) {
 		// 맵의 블럭이 0이면
 		itemList.add(item);
+	}
+	
+	public void makeBoss(Monster boss) {
+		this.boss = boss;
 	}
 	
 	public void drawItems(Graphics g) {
@@ -56,6 +60,10 @@ public class Stage implements Runnable{
 				itemList.remove(i);
 			}
 		}
+	}
+	
+	public void drawBoss(Graphics g) {
+		g.drawImage(boss.getCurrentState(), boss.getX(), boss.getY(), null);
 	}
 	
 	public void start() {

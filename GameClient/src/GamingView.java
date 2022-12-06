@@ -43,10 +43,15 @@ public class GamingView extends JFrame implements Runnable {
 
 	private Image background = backgroundImage;
 	
+	// 스테이지 생성
 	public  static Stage stage = new Stage();
 
 	private KeyListener keyListener;
+	// 플레이어 생성
 	public static GamePlayer player = new GamePlayer();
+	
+	// 보스 생성
+	public static Monster boss = new Monster()
 	
 	// 초기 플레이어 x, y 좌표
 	private int[] init_X = {225, 275, 480, 530};
@@ -186,7 +191,7 @@ public class GamingView extends JFrame implements Runnable {
 		drawTile();
 
 //		drawItems();
-		eatItem();
+		//eatItem();
 		stage.drawItems(g);
 
 		addBubble();
@@ -351,50 +356,50 @@ public class GamingView extends JFrame implements Runnable {
 		}
 	}
 
-	// 아이템 그리기
-	public void drawItems() {
-		for (int i = 0; i < Item_XY.size(); i++) {
-			String[] xy = Item_XY.get(i).split(",");
-			int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
-			int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
-			int type = Integer.parseInt(xy[2]);
-			if (player.map[Integer.parseInt(xy[1])][Integer.parseInt(xy[0])] == 0) {
-				if (type % 3 == 0) {
-					Item item = new Item("물풍선", item_x, item_y, screenGraphics, cnt, observer);
-					item.drawImage();
-				} else if (type % 3 == 1) {
-					Item item2 = new Item("물줄기", item_x, item_y, screenGraphics, cnt, observer);
-					item2.drawImage();
-				} else {
-					Item item3 = new Item("달리기", item_x, item_y, screenGraphics, cnt, observer);
-					item3.drawImage();
-				}
-			}
-		}
-	}
-
-	// 아이템 먹기
-	public void eatItem() {
-		for (int i = 0; i < Item_XY.size(); i++) {
-			String[] xy = Item_XY.get(i).split(",");
-			int type = Integer.parseInt(xy[2]);
-			if (player.getMapX(player.getPos_X()) == Integer.parseInt(xy[0])
-					&& player.getMapY(player.getPos_Y()) == Integer.parseInt(xy[1])) {
-				if (type % 3 == 0) { // 물풍선 먹기
-					player.addMaxBubbleNum();
-					Item_XY.remove(i);
-				} else if (type % 3 == 1) { // 물줄기 먹기
-					Item_XY.remove(i);
-//					player.waveLen += 1;	
-				} else { // 달리기 먹기
-					if (player.PLAYER_MOVE < 8)
-						player.PLAYER_MOVE += 2;
-					Item_XY.remove(i);
-				}
-			}
-
-		}
-	}
+//	// 아이템 그리기
+//	public void drawItems() {
+//		for (int i = 0; i < Item_XY.size(); i++) {
+//			String[] xy = Item_XY.get(i).split(",");
+//			int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
+//			int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
+//			int type = Integer.parseInt(xy[2]);
+//			if (player.map[Integer.parseInt(xy[1])][Integer.parseInt(xy[0])] == 0) {
+//				if (type % 3 == 0) {
+//					Item item = new Item("물풍선", item_x, item_y, screenGraphics, cnt, observer);
+//					item.drawImage();
+//				} else if (type % 3 == 1) {
+//					Item item2 = new Item("물줄기", item_x, item_y, screenGraphics, cnt, observer);
+//					item2.drawImage();
+//				} else {
+//					Item item3 = new Item("달리기", item_x, item_y, screenGraphics, cnt, observer);
+//					item3.drawImage();
+//				}
+//			}
+//		}
+//	}
+//
+//	// 아이템 먹기
+//	public void eatItem() {
+//		for (int i = 0; i < Item_XY.size(); i++) {
+//			String[] xy = Item_XY.get(i).split(",");
+//			int type = Integer.parseInt(xy[2]);
+//			if (player.getMapX(player.getPos_X()) == Integer.parseInt(xy[0])
+//					&& player.getMapY(player.getPos_Y()) == Integer.parseInt(xy[1])) {
+//				if (type % 3 == 0) { // 물풍선 먹기
+//					player.addMaxBubbleNum();
+//					Item_XY.remove(i);
+//				} else if (type % 3 == 1) { // 물줄기 먹기
+//					Item_XY.remove(i);
+////					player.waveLen += 1;	
+//				} else { // 달리기 먹기
+//					if (player.PLAYER_MOVE < 8)
+//						player.PLAYER_MOVE += 2;
+//					Item_XY.remove(i);
+//				}
+//			}
+//
+//		}
+//	}
 
 	// 죽기
 	public void diePlayer() {
