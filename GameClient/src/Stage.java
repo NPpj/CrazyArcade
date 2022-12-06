@@ -2,13 +2,39 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
 public class Stage implements Runnable{
 	private Thread th;
 	public static int cnt; // 무한루프를 카운터 하기 위한 변수
-	private Image img = null;
-	private int x,y;
+	
+	private Image tileImg = null;
+	public static final int BLOCK_W = 51;
+	public static final int BLOCK_H = 62;
+	public static final int START_W= 25;
+	public static final int START_H = 62;
+	
 	private ArrayList<Item> itemList = new ArrayList<>(); // 아이템 담을 리스트
+	private Image itemImg = null;
+	private int item_X, item_Y;
+	
 	private Monster boss = null;
+	
+	public static int [][] map = {
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
+			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	};
 	
 	public ArrayList<Item> getItemList(){
 		return itemList;
@@ -23,26 +49,73 @@ public class Stage implements Runnable{
 		this.boss = boss;
 	}
 	
+	public void drawTile(Graphics g) {
+		//super(START_W +BLOCK_W*x, START_H+BLOCK_H*y, BLOCK_W,BLOCK_H,g);
+		Image temp_img = null;
+		g.setClip(null);
+		// 초기 맵 깔기
+		for (int y = 12; y >= 0; y--) {
+			for (int x = 0; x < 15; x++) {
+				switch (map[y][x]) {
+				case 0:
+					break;
+				case 1:
+					tileImg = new ImageIcon(Stage.class.getResource("/assets/map/forest/block/block_1.png")).getImage();
+					break;
+				case 2:
+					tileImg = new ImageIcon(Stage.class.getResource("/assets/map/forest/block/block_4.png")).getImage();
+					break;
+				case 3:
+					tileImg = new ImageIcon(Stage.class.getResource("/assets/map/forest/block/block_7.png")).getImage();
+					break;
+				}
+				g.drawImage(tileImg, START_W +BLOCK_W*x, START_H+BLOCK_H*y, null);
+			}
+			;
+		}
+	}
+	
+	public void breakBlock(int x, int y) {
+		int len = GamingView.player.waveLen;
+		for (int i = 1; i <= len; i++) {
+			if (x >= i)
+				map[y][x - i] = 0;
+			if (x + i < 15)
+				map[y][x + i] = 0;
+			if (y >= i)
+				map[y - i][x] = 0;
+			if (y + i < 13)
+				map[y + i][x] = 0;
+			map[y][x] = 0;
+		}
+	}
+	
 	public void drawItems(Graphics g) {
 		for(int i = 0; i< itemList.size(); i++) {
-			if(itemList.get(i) instanceof ItemSpeed) {
+			itemImg = null;
+			if(itemList.get(i) instanceof ItemSpeed
+					&& map[itemList.get(i).getY()][itemList.get(i).getX()] == 0) {
 				ItemSpeed speed = (ItemSpeed)itemList.get(i);
-				img = speed.getItemSpeed();
-				x = speed.getX(); y = speed.getY();
+				itemImg = speed.getItemSpeed();
+				item_X = speed.getX(); item_Y = speed.getY();
 			}
-			else if(itemList.get(i) instanceof ItemBubble) {
+			else if(itemList.get(i) instanceof ItemBubble
+					&& map[itemList.get(i).getY()][itemList.get(i).getX()] == 0) {
 				ItemBubble bubble = (ItemBubble)itemList.get(i);
-				img = bubble.getItemBubble();
-				x = bubble.getX(); y = bubble.getY();
+				itemImg = bubble.getItemBubble();
+				item_X = bubble.getX(); item_Y = bubble.getY();
 			}
-			else if(itemList.get(i) instanceof ItemFluid) {
+			else if(itemList.get(i) instanceof ItemFluid
+					&& map[itemList.get(i).getY()][itemList.get(i).getX()] == 0) {
 				ItemFluid fluid = (ItemFluid)itemList.get(i);
-				img = fluid.getItemFluid();
-				x = fluid.getX(); y = fluid.getY();
+				itemImg = fluid.getItemFluid();
+				item_X = fluid.getX(); item_Y = fluid.getY();
 			}
-			g.setClip(x, y, 56, 70);
-			if (cnt/10 % 2 == 0) g.drawImage(img, x - ( 56 * 0 ), y, null);
-			else if(cnt/10% 2 == 1) g.drawImage(img, x - ( 56 * 1 ), y, null);
+			if(itemImg != null) {
+				g.setClip(item_X, item_Y, 56, 70);
+				if (cnt/10 % 2 == 0) g.drawImage(itemImg, item_X - ( 56 * 0 ), item_Y, null);
+				else if(cnt/10% 2 == 1) g.drawImage(itemImg, item_X - ( 56 * 1 ), item_Y, null);
+			}
 		}
 	}
 	
@@ -55,6 +128,9 @@ public class Stage implements Runnable{
 				if(itemList.get(i) instanceof ItemSpeed) {
 					if (GamingView.player.PLAYER_MOVE < 8)
 						GamingView.player.PLAYER_MOVE += 2;
+				}
+				else if(itemList.get(i) instanceof ItemBubble) {
+					GamingView.player.addBubbleNum();
 				}
 				// 아이템 리스트에서 삭제하여 화면에 보이지 않게한다.
 				itemList.remove(i);
@@ -91,6 +167,8 @@ public class Stage implements Runnable{
 		makeItems(new ItemFluid(3,7));
 		makeItems(new ItemFluid(13,6));
 		makeItems(new ItemFluid(8,9));
+		
+		makeBoss(GamingView.boss);
 		
 		while(itemList.size() > 0) {
 			getItems();

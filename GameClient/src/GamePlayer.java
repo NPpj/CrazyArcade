@@ -33,6 +33,7 @@ public class GamePlayer {
 	//물풍선 배열 좌표  
 	public String[] bubbles = new String[maxBubbleNum];
 	
+	/*
 	public int [][] map = {
 			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
 			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
@@ -47,7 +48,7 @@ public class GamePlayer {
 			{0,3,2,3,0,0,3,2,3,0,0,3,2,3,0},
 			{0,2,3,2,0,0,2,3,2,0,0,2,3,2,0},
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	};
+	};*/
 	
 	// 이미지 파일
 	private Image playerLeftMove = new ImageIcon(GamePlayer.class.getResource("/assets/player/bazzi/left.png"))
@@ -140,28 +141,28 @@ public class GamePlayer {
 	}
 	
 	public void moveToRight() {
-		if(pos_X <= GROUND_END_X && map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0 && getPlayerState()=="live")
+		if(pos_X <= GROUND_END_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0 && getPlayerState()=="live")
 //		if(pos_X <= GROUND_END_X )
 			pos_X += PLAYER_MOVE;
 		
 		state = playerRightMove;
 	}
 	public void moveToLeft() {
-		if(pos_X >= GROUND_START_X && map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0&& getPlayerState()=="live")
+		if(pos_X >= GROUND_START_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0&& getPlayerState()=="live")
 //		if(pos_X >= GROUND_START_X)
 			pos_X -= PLAYER_MOVE;
 		
 		state = playerLeftMove;
 	}
 	public void moveToUp() {
-		if(pos_Y >= GROUND_START_Y && map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
+		if(pos_Y >= GROUND_START_Y && Stage.map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
 //		if(pos_Y >= GROUND_START_Y)
 			pos_Y -= PLAYER_MOVE;
 		
 		state = playerUpMove;
 	}
 	public void moveToDown() {
-		if(pos_Y <= GROUND_END_Y && map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
+		if(pos_Y <= GROUND_END_Y && Stage.map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
 //		if(pos_Y <= GROUND_END_Y)
 			pos_Y += PLAYER_MOVE;
 		

@@ -48,14 +48,13 @@ public class GamingView extends JFrame implements Runnable {
 
 	private KeyListener keyListener;
 	// 플레이어 생성
-	public static GamePlayer player = new GamePlayer();
-	
-	// 보스 생성
-	public static Monster boss = new Monster()
-	
+	public static GamePlayer player = new GamePlayer();	
 	// 초기 플레이어 x, y 좌표
 	private int[] init_X = {225, 275, 480, 530};
 	private int[] init_Y = {790, 790, 790, 790};
+	
+	// 보스 생성
+	public static Monster boss = new Monster(320,100);
 	
 	// 블록 크기 
 	public static final int BLOCK_W = 50;
@@ -80,7 +79,7 @@ public class GamingView extends JFrame implements Runnable {
 
 //	// 물풍선 객체 저장
 //	public static ArrayList<String> Item_XY = new ArrayList();
-//	public static ArrayList<Bubble> bubbleList = new ArrayList();
+	public static ArrayList<Bubble> bubbleList = new ArrayList();
 //	public static ArrayList<Wave> waveList = new ArrayList();
 
 //	// 아이템 위치
@@ -188,11 +187,12 @@ public class GamingView extends JFrame implements Runnable {
 		}
 
 		// 꽃, 박스 그리기
-		drawTile();
+		stage.drawTile(g);
 
 //		drawItems();
 		//eatItem();
 		stage.drawItems(g);
+		stage.drawBoss(g);
 
 		addBubble();
 
@@ -209,6 +209,7 @@ public class GamingView extends JFrame implements Runnable {
 		this.repaint();
 	}
 
+	/*
 	public void drawTile() {
 		Image temp_img = null;
 		screenGraphics.setClip(null);
@@ -234,11 +235,12 @@ public class GamingView extends JFrame implements Runnable {
 			}
 			;
 		}
-	}
+	}*/
 
+	/*
 	public void drawMap() {
 		drawTile();
-	}
+	}*/
 
 	public void drawPlayer() {
 		screenGraphics.setFont(new Font("Default", Font.BOLD, 20));
@@ -312,7 +314,7 @@ public class GamingView extends JFrame implements Runnable {
 			    @Override
 			    public void run() {
 			    	Bubble_XY.remove(str);
-			    	breakBlock(x,y);
+			    	stage.breakBlock(x,y);
 			    	player.downBubbleNum();
 			    }	
 			};
@@ -341,6 +343,7 @@ public class GamingView extends JFrame implements Runnable {
 //	}
 
 	// 블록 깨기
+	/*
 	public void breakBlock(int x, int y) {
 		int len = player.waveLen;
 		for (int i = 1; i <= len; i++) {
@@ -354,7 +357,7 @@ public class GamingView extends JFrame implements Runnable {
 				player.map[y + i][x] = 0;
 			player.map[y][x] = 0;
 		}
-	}
+	}*/
 
 //	// 아이템 그리기
 //	public void drawItems() {

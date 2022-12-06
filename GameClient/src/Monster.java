@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import javax.swing.ImageIcon;
 
 public class Monster implements Runnable{
+	// 좌표:320,100
 	private Thread th;
 	private static int count;
 	public static int BOSS_MOVE=50;
