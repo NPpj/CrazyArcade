@@ -23,9 +23,10 @@ public class GamingView extends JFrame implements Runnable {
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 	private Socket socket; // 연결소켓
 	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	public static ObjectOutputStream oos;
 	// private String userName;
 	GameUser user = GameUser.getInstance();
+	public static int userIndex;
 
 	private Image screenImage;
 	public static Graphics screenGraphics;
@@ -47,11 +48,13 @@ public class GamingView extends JFrame implements Runnable {
 
 	private Image background = backgroundImage;
 
-	private KeyListener keyListener;
-	public static GamePlayer player = new GamePlayer();
+	public static KeyListener keyListener;
+	public static ArrayList<GamePlayer> playerList = new ArrayList<>(); // 게임 플레이어 리스트
+	private int playerNum;
+	public static int roomNum;
 	
 	// 초기 플레이어 x, y 좌표
-	private int[] init_X = {225, 275, 480, 530};
+	private int[] init_X = {200, 275, 480, 530};
 	private int[] init_Y = {790, 790, 790, 790};
 	
 	// 블록 크기 
@@ -102,7 +105,10 @@ public class GamingView extends JFrame implements Runnable {
 	// space바 누른 키 저장
 	public static ArrayList<String> Bubble_XY = new ArrayList();
 
-	public GamingView(int roomNum, int userIndex) {
+	public GamingView(int roomNum, int userIndex, int playerNum) {
+		this.userIndex=userIndex;
+		this.playerNum=playerNum;
+		this.roomNum=roomNum;
 		this.net = user.getNet();
 		this.ois = net.getOIS();
 		this.oos= net.getOOS();
@@ -120,8 +126,12 @@ public class GamingView extends JFrame implements Runnable {
 		// 키 리스너 생성
 		addKeyListener(keyListener);
 
-		// 플레이어 초기 설정
-		player.init(init_X[userIndex], init_Y[userIndex], "down");
+		// 플레이어들 생성
+		for(int i=0;i<playerNum;i++) {
+			playerList.add(new GamePlayer(i));
+			playerList.get(i).init(init_X[i], init_Y[i], "down");
+		}
+		
 
 		// 초기 아이템 위치 설정
 		setItemPos();
@@ -141,11 +151,6 @@ public class GamingView extends JFrame implements Runnable {
 			try {
 //				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
-				if (keyListener.playerMove) {
-					String PlayerMovingData = player.getDirection();
-//					ChatMsg obcm = new ChatMsg(user.getId(), "300", PlayerMovingData);
-//					SendObject(obcm);
-				}
 				repaint();
 				Thread.sleep(20);
 
@@ -185,24 +190,29 @@ public class GamingView extends JFrame implements Runnable {
 
 			}
 		}
+		
 
 		// 꽃, 박스 그리기
 		drawTile();
 
-		drawItems();
-		eatItem();
-
 		addBubble();
+		
+		drawPlayer();
+		
+//		drawItems();
+//		eatItem();
 
-		// player 상태에 따른 이미지 변경
-		if (player.getPlayerState() == "live")
-			drawPlayer();
-		else if (player.getPlayerState() == "trap")
-			trapPlayer();
-		else if (player.getPlayerState() == "die") {
-			diePlayer();
-			player.setPlayerState("dispose");
-		}
+		
+
+//		// player 상태에 따른 이미지 변경
+//		if (player.getPlayerState() == "live")
+//			drawPlayer();
+//		else if (player.getPlayerState() == "trap")
+//			trapPlayer();
+//		else if (player.getPlayerState() == "die") {
+//			diePlayer();
+//			player.setPlayerState("dispose");
+//		}
 
 		this.repaint();
 	}
@@ -213,7 +223,7 @@ public class GamingView extends JFrame implements Runnable {
 		// 초기 맵 깔기
 		for (int y = 12; y >= 0; y--) {
 			for (int x = 0; x < 15; x++) {
-				switch (player.map[y][x]) {
+				switch (playerList.get(userIndex).map[y][x]) {
 				case 0:
 					break;
 				case 1:
@@ -243,7 +253,9 @@ public class GamingView extends JFrame implements Runnable {
 		screenGraphics.drawString(Integer.toString(cnt), 50, 50);
 		// 위는 단순히 무한루프 적용여부와 케릭터 방향 체크를 위해
 		// 눈으로 보면서 테스트할 용도로 쓰이는 텍스트 표출입니다.
-		movePlayer(player.getState(), player.getPos_X(), player.getPos_Y(), 64, 100);
+		for(int i=0;i<playerNum;i++) {
+			movePlayer(playerList.get(i).getState(), playerList.get(i).getPos_X(), playerList.get(i).getPos_Y(), 64, 100);
+		}
 	}
 
 	public void movePlayer(Image img, int x, int y, int width, int height) {
@@ -251,9 +263,9 @@ public class GamingView extends JFrame implements Runnable {
 		// 받은 값을 이용해서 위의 이미지칩셋에서 플레이어를 잘라내 표출하도록 계산하는 메소드 입니다.
 		screenGraphics.setClip(x, y, width, height);
 		// 현재 좌표에서 케릭터의 크기 만큼 이미지를 잘라 그립니다.
-		String direction = player.getDirection();
+		String direction = playerList.get(userIndex).getDirection();
 
-		if (keyListener.playerMove) {
+		if (GamingView.playerList.get(userIndex).playerMove) {
 //			System.out.println("x:"+player.getMapX(player.getPos_X())+" y:"+player.getMapY(player.getPos_Y())+"("+player.getPos_X()+","+player.getPos_Y()+")");
 			if (direction.equals("up") || direction.equals("down")) { // 케릭터의 움직임 여부를 판단합니다.
 				// 케릭터의 방향에 따라 걸어가는 모션을 취하는
@@ -311,7 +323,8 @@ public class GamingView extends JFrame implements Runnable {
 			    public void run() {
 			    	Bubble_XY.remove(str);
 			    	breakBlock(x,y);
-			    	player.downBubbleNum();
+//			    	playerList.get(userIndex).setBubbleNum(Bubble_XY.size());
+//			    	System.out.println("================="+playerList.get(userIndex).getBubbleNum());
 			    }	
 			};
 			timer.schedule(task, 2000); //실행 Task, 1초뒤 실행
@@ -340,17 +353,17 @@ public class GamingView extends JFrame implements Runnable {
 
 	// 블록 깨기
 	public void breakBlock(int x, int y) {
-		int len = player.waveLen;
+		int len = playerList.get(userIndex).waveLen;
 		for (int i = 1; i <= len; i++) {
 			if (x >= i)
-				player.map[y][x - i] = 0;
+				playerList.get(userIndex).map[y][x - i] = 0;
 			if (x + i < 15)
-				player.map[y][x + i] = 0;
+				playerList.get(userIndex).map[y][x + i] = 0;
 			if (y >= i)
-				player.map[y - i][x] = 0;
+				playerList.get(userIndex).map[y - i][x] = 0;
 			if (y + i < 13)
-				player.map[y + i][x] = 0;
-			player.map[y][x] = 0;
+				playerList.get(userIndex).map[y + i][x] = 0;
+			playerList.get(userIndex).map[y][x] = 0;
 		}
 	}
 
@@ -361,7 +374,7 @@ public class GamingView extends JFrame implements Runnable {
 			int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
 			int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
 			int type = Integer.parseInt(xy[2]);
-			if (player.map[Integer.parseInt(xy[1])][Integer.parseInt(xy[0])] == 0) {
+			if (playerList.get(userIndex).map[Integer.parseInt(xy[1])][Integer.parseInt(xy[0])] == 0) {
 				if (type % 3 == 0) {
 					Item item = new Item("물풍선", item_x, item_y, screenGraphics, cnt, observer);
 					item.drawImage();
@@ -381,18 +394,24 @@ public class GamingView extends JFrame implements Runnable {
 		for (int i = 0; i < Item_XY.size(); i++) {
 			String[] xy = Item_XY.get(i).split(",");
 			int type = Integer.parseInt(xy[2]);
-			if (player.getMapX(player.getPos_X()) == Integer.parseInt(xy[0])
-					&& player.getMapY(player.getPos_Y()) == Integer.parseInt(xy[1])) {
+			if (playerList.get(userIndex).getMapX(playerList.get(userIndex).getPos_X()) == Integer.parseInt(xy[0])
+					&& playerList.get(userIndex).getMapY(playerList.get(userIndex).getPos_Y()) == Integer.parseInt(xy[1])) {
 				if (type % 3 == 0) { // 물풍선 먹기
-					player.addMaxBubbleNum();
-					Item_XY.remove(i);
+//					playerList.get(userIndex).addMaxBubbleNum();
+//					Item_XY.remove(i);
+					GameInfo obcm = new GameInfo("402", GamingView.roomNum, userIndex, "1,"+i);
+					SendObject(obcm);
 				} else if (type % 3 == 1) { // 물줄기 먹기
-					Item_XY.remove(i);
+//					Item_XY.remove(i);
+					GameInfo obcm = new GameInfo("402", GamingView.roomNum, userIndex, "2,"+i);
+					SendObject(obcm);
 //					player.waveLen += 1;	
 				} else { // 달리기 먹기
-					if (player.PLAYER_MOVE < 8)
-						player.PLAYER_MOVE += 2;
-					Item_XY.remove(i);
+					GameInfo obcm = new GameInfo("402", GamingView.roomNum, userIndex, "3,"+i);
+					SendObject(obcm);
+//					if (playerList.get(userIndex).PLAYER_MOVE < 8)
+//						playerList.get(userIndex).PLAYER_MOVE += 2;
+//					Item_XY.remove(i);
 				}
 			}
 
@@ -401,14 +420,14 @@ public class GamingView extends JFrame implements Runnable {
 
 	// 죽기
 	public void diePlayer() {
-		DiePlayer die = new DiePlayer(player.getPos_X() - 10, player.getPos_Y() - 40, screenGraphics, cnt, observer);
+		DiePlayer die = new DiePlayer(playerList.get(userIndex).getPos_X() - 10, playerList.get(userIndex).getPos_Y() - 40, screenGraphics, cnt, observer);
 		die.drawImage();
 
 	}
 
 	// 갇히기
 	public void trapPlayer() {
-		TrapPlayer trap = new TrapPlayer(player.getPos_X() - 10, player.getPos_Y(), screenGraphics, cnt, observer);
+		TrapPlayer trap = new TrapPlayer(playerList.get(userIndex).getPos_X() - 10, playerList.get(userIndex).getPos_Y(), screenGraphics, cnt, observer);
 		trap.drawImage();
 
 	}

@@ -30,6 +30,43 @@ class ListenNetwork extends Thread {
 		return this.oos;
 	}
 
+	public void PlayerMove(String data,int userIndex) {
+		switch(data) {
+		case "pressedKeyUp":
+			GamingView.playerList.get(userIndex).moveToUp();
+			GamingView.playerList.get(userIndex).playerMove = true;
+			break;
+		case "pressedKeyDown":
+			GamingView.playerList.get(userIndex).moveToDown();
+			GamingView.playerList.get(userIndex).playerMove = true;
+			break;
+		case "pressedKeyLeft":
+			GamingView.playerList.get(userIndex).moveToLeft();
+			GamingView.playerList.get(userIndex).playerMove = true;
+			break;
+		case "pressedKeyRight":
+			GamingView.playerList.get(userIndex).moveToRight();
+			GamingView.playerList.get(userIndex).playerMove = true;
+			break;
+		}
+	}
+
+	public void PlayerEatItem(String n, String i, int userIndex) {
+		switch(n) {
+		case "1":
+			GamingView.playerList.get(userIndex).addMaxBubbleNum();
+			GamingView.Item_XY.remove(i);
+			break;
+		case "2":
+			GamingView.Item_XY.remove(i);
+			break;
+		case "3":
+			if (GamingView.playerList.get(userIndex).PLAYER_MOVE < 8)
+				GamingView.playerList.get(userIndex).PLAYER_MOVE += 2;
+			GamingView.Item_XY.remove(i);
+			break;
+		}
+	}
 	public void run() {
 		while (true) {
 			try {
@@ -37,6 +74,7 @@ class ListenNetwork extends Thread {
 				Object obcm = null;
 				String msg = null;
 				ChatMsg cm;
+				GameInfo gi = null;
 				try {
 					obcm = ois.readObject();
 				} catch (ClassNotFoundException e) {
@@ -49,8 +87,7 @@ class ListenNetwork extends Thread {
 				if (obcm instanceof ChatMsg) {
 					cm = (ChatMsg) obcm;
 					msg = String.format("[%s] %s", cm.getUserName(), cm.getData());
-				} else
-					continue;
+				
 
 				// code
 				switch (cm.getCode()) {
@@ -107,13 +144,14 @@ class ListenNetwork extends Thread {
 					waitRoomFrame.AppendText(msg);
 					break;
 					
-				case "300": // Image 첨부
+				case "300": // 게임시작
 					String[] Result300 = cm.getData().split("/"); // [0]:roomId [1]:현재 방 userList
 					String UserListStr300 = Result300[1].substring(1, Result300[1].length() - 1);
 					String[] UserList300 = UserListStr300.split(", "); // userName들
 					int userIndex = Arrays.asList(UserList300).indexOf(user.getId()); // 자기가 방에 몇번째로 들어온 user인지
 					
-					gamingView = new GamingView(Integer.parseInt(Result300[0]), userIndex);
+					// 게임 시작 
+					gamingView = new GamingView(Integer.parseInt(Result300[0]), userIndex, UserList300.length);
 					gamingView.setVisible(true);
 					waitRoomFrame.setVisible(false);
 					
@@ -123,7 +161,29 @@ class ListenNetwork extends Thread {
 					
 					gamingView.repaint();
 					break;
+					}
+				} else if(obcm instanceof GameInfo) {
+					gi = (GameInfo) obcm;
+					if(gi.code.matches("400")) {// 플레이어 움직임  
+						int roomId = gi.getRoomId();
+						int userId = gi.getUserId();
+						String data = gi.getData();
+						PlayerMove(data,userId);
+					}else if(gi.code.matches("401")) {// 플레이어 물풍선 놓기  
+						int roomId = gi.getRoomId();
+						int userId = gi.getUserId();
+						String data = gi.getData();
+						GamingView.Bubble_XY.add(data);
+					}else if(gi.code.matches("402")) {//플레이어 아이템 먹기 
+						int roomId = gi.getRoomId();
+						int userId = gi.getUserId();
+						String data = gi.getData();
+						String[] d = data.split(",");
+						PlayerEatItem(d[0],d[1],userId);
+					}
 				}
+				else
+					continue;
 			} catch (IOException e) {
 				System.out.println("ois.readObject() error Net");
 				try {

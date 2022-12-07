@@ -229,7 +229,7 @@ public class JavaGameServer extends JFrame {
 		public void WriteSomeObject(Object ob, List<String> userList) {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
-				// 게임룸 들어와있는 유저에게만 방송
+				// 나를 제외한 게임룸 들어와있는 유저에게만 방송
 				if (userList.contains(user_name_vc.elementAt(i))) {
 					user.WriteOneObject(ob);
 				}
@@ -325,6 +325,7 @@ public class JavaGameServer extends JFrame {
 					Object obcm = null;
 					String msg = null;
 					ChatMsg cm = null;
+					GameInfo gi = null;
 					GameRoom gameRoom = null;
 					if (socket == null)
 						break;
@@ -342,8 +343,6 @@ public class JavaGameServer extends JFrame {
 					if (obcm instanceof ChatMsg) {
 						cm = (ChatMsg) obcm;
 //						AppendObject(cm);
-					} else
-						continue;
 					// 로그인 
 					if (cm.code.matches("100")) {  
 						UserName = cm.getUserName();
@@ -407,12 +406,39 @@ public class JavaGameServer extends JFrame {
 						gameRoom.setIsPlaying(true);
 						WriteSome("300", roomId+"/"+gameRoom.getUserList(), gameRoom.getUserList());
 					}
-					else if (cm.code.matches("400")) { // logout message 처리
+					else if (cm.code.matches("500")) { // logout message 처리
 						Logout();
 						break;
 					} else { // 300, 500, ... 기타 object는 모두 방송한다.
 						WriteAllObject(cm);
 					} 
+					
+				
+					
+					/* ---------- 게임 정보 객체 ------------ */
+					} else if(obcm instanceof GameInfo) {
+						gi = (GameInfo) obcm;
+						if(gi.code.matches("400")) {// 플레이어 움직임  
+							int roomId = gi.getRoomId();
+							int userId = gi.getUserId();
+							String data = gi.getData();
+							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
+						}
+						else if(gi.code.matches("401")) {// 플레이어 물풍선 놓기
+							int roomId = gi.getRoomId();
+							int userId = gi.getUserId();
+							String data = gi.getData();
+							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
+						}else if(gi.code.matches("402")) {// 플레이어 아이템 먹기 
+							int roomId = gi.getRoomId();
+							int userId = gi.getUserId();
+							String data = gi.getData();
+							AppendText(data);
+							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
+						}
+					}else
+						continue;
+					
 				} catch (IOException e) {
 					AppendText("ois.readObject() error");
 					if(e.getCause() != null)
