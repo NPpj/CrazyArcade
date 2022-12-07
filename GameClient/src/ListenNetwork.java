@@ -173,14 +173,35 @@ class ListenNetwork extends Thread {
 						int roomId = gi.getRoomId();
 						int userId = gi.getUserId();
 						String data = gi.getData();
-						GamingView.Bubble_XY.add(data);
+//						GamingView.Bubble_XY.add(data);
 					}else if(gi.code.matches("402")) {//플레이어 아이템 먹기 
 						int roomId = gi.getRoomId();
 						int userId = gi.getUserId();
 						String data = gi.getData();
 						String[] d = data.split(",");
 						PlayerEatItem(d[0],d[1],userId);
-					}
+					}else if(gi.code.matches("403")) {// 블록 깨기 
+						int roomId = gi.getRoomId();
+						int userId = gi.getUserId();
+						String data = gi.getData();
+						String[] d = data.split(",");
+						int x=Integer.parseInt(d[0]);
+						int y=Integer.parseInt(d[1]);
+						int i = 1;
+						if (x >= i)
+							Stage.map[y][x - i] = 0;
+						if (x + i < 15)
+							Stage.map[y][x + i] = 0;
+						if (y >= i)
+							Stage.map[y - i][x] = 0;
+						if (y + i < 13)
+							Stage.map[y + i][x] = 0;
+						Stage.map[y][x] = 0;
+					}else if(gi.code.matches("404")) {// 죽기
+						int roomId = gi.getRoomId();
+						int userId = gi.getUserId();
+						String data = gi.getData();
+						GamingView.playerList.get(userId).setPlayerState("die");					}
 				}
 				else
 					continue;
