@@ -5,6 +5,8 @@ import java.awt.image.ImageObserver;
 import javax.swing.ImageIcon;
 
 public class Item {
+	//int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
+	//int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
 	private int x;
 	private int y;
 	

@@ -4,21 +4,40 @@ import java.awt.image.ImageObserver;
 
 import javax.swing.ImageIcon;
 
-public class Bubble extends addModel{
-	private int cnt;
-	private ImageObserver observer;
+public class Bubble{
+	private Image userBubble = new ImageIcon(GamingView.class.getResource("/assets/1.png"))
+			.getImage();
 	private int x;
 	private int y;
+	private long startCnt;
+			
+	public Bubble(int x, int y, long startCnt) {
+		this.x = x;
+		this.y = y;
+		this.startCnt = startCnt;
+	}
 	
-	public Bubble(int x, int y, Graphics g, int cnt, ImageObserver observer) {
-		super(Tile.START_W +Tile.BLOCK_W*x, Tile.START_H+Tile.BLOCK_H*y,56,54,g);
-		
-		this.observer=observer;
-		this.cnt=cnt;
-		setImage(new ImageIcon(GamePlayer.class.getResource("/assets/1.png")).getImage());
+	public int getX() {
+		return x;
 	}
 
-	public void drawImage() {
-		drawAllImage(getImage(),getX(),getY(),cnt,4,observer);
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public long getStartCnt() {
+		return startCnt;
+	}
+
+	public Image getUserBubble() {
+		return userBubble;
 	}
 }

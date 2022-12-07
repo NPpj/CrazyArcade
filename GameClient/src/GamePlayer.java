@@ -1,5 +1,6 @@
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
@@ -71,6 +72,9 @@ public class GamePlayer {
 	// 표시할 이미지
 	private Image state;
 	
+	// 물풍선
+	//private ArrayList<Bubble> myBubbleList = new ArrayList();
+	
 	public void init(int pos_X, int pos_Y, String direction) {
 		switch (direction) {
 		case "up":
@@ -140,6 +144,38 @@ public class GamePlayer {
 		return playerDownMove;
 	}
 	
+	/*
+	public void addMyBubble() {
+		System.out.println("내가 공격");
+		if(getBubbleNum() < getMaxBubbleNum()) {
+			// x,y 는 map 좌표 
+			int x = getMapX(GamingView.player.getPos_X()-20);
+			int y = getMapY(GamingView.player.getPos_Y()-10);
+			myBubbleList.add(new Bubble(x,y));
+			addBubbleNum();
+			System.out.print("물풍선 리스트: ");
+			for(int i =0;i<myBubbleList.size();i++) {
+				System.out.println(myBubbleList.get(i).getX()+","+myBubbleList.get(i).getX()+" // ");
+			}
+			System.out.println("물풍선 개수: "+getBubbleNum());
+		}
+	}
+	public void removeMyBubble() {
+		if(myBubbleList.size()>0) {
+			myBubbleList.remove(0);
+			downBubbleNum();
+			System.out.println("물풍선 사라짐 남은 물풍선 개수: "+getBubbleNum());
+		}
+	}
+	
+	public ArrayList<Bubble> getMyBubbleList() {
+		return myBubbleList;
+	}
+
+	public void setMyBubbleList(ArrayList<Bubble> myBubbleList) {
+		this.myBubbleList = myBubbleList;
+	}*/
+
 	public void moveToRight() {
 		if(pos_X <= GROUND_END_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0 && getPlayerState()=="live")
 //		if(pos_X <= GROUND_END_X )

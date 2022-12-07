@@ -13,6 +13,7 @@ public class KeyListener extends KeyAdapter {
 	private static boolean pressedKeyDown = false;
 	private static boolean pressedKeyLeft = false;
 	private static boolean pressedKeyRight = false;
+	private static boolean pressedKeySpaece = false;
 	public static int pressedKeySpace_X = 0; 
 	public static int pressedKeySpace_Y = 0; 
 	public static boolean pushSpace= false;
@@ -31,17 +32,17 @@ public class KeyListener extends KeyAdapter {
 			playerMove = true;
 		}
 
-		if ( pressedKeyDown){
+		else if ( pressedKeyDown){
 			GamingView.player.moveToDown();
 			playerMove = true;
 		}
 
-		if ( pressedKeyLeft){
+		else if ( pressedKeyLeft){
 			GamingView.player.moveToLeft();
 			playerMove = true;
 		}
 
-		if ( pressedKeyRight){
+		else if ( pressedKeyRight){
 			GamingView.player.moveToRight();
 			playerMove = true;
 		}
@@ -63,13 +64,25 @@ public class KeyListener extends KeyAdapter {
 			pressedKeyDown = true;
 			break;
 		case KeyEvent.VK_SPACE: // 물풍선 놓기 
+			pressedKeySpaece = true;
 			if(GamingView.player.getBubbleNum() < GamingView.player.getMaxBubbleNum()) {
 				GamingView.player.addBubbleNum();
-				// x,y 는 map 좌표 
 				int x = GamingView.player.getMapX(GamingView.player.getPos_X()-20);
 				int y = GamingView.player.getMapY(GamingView.player.getPos_Y()-10);
-				GamingView.Bubble_XY.add(String.valueOf(x)+","+String.valueOf(y));
+				long startCnt = GamingView.cnt;
+				GamePlayerBubble.bubbleList.add(new Bubble(x,y,startCnt));
+				System.out.println("내가 공격1, size: "+ GamePlayerBubble.bubbleList.size());
 			}
+			
+			//if(GamingView.player.getBubbleNum() < GamingView.player.getMaxBubbleNum()) {
+				
+				//GamingView.player.addBubbleNum();
+				// x,y 는 map 좌표 
+				//int x = GamingView.player.getMapX(GamingView.player.getPos_X()-20);
+				//int y = GamingView.player.getMapY(GamingView.player.getPos_Y()-10);
+				//GamePlayerBubble.bubbleList.add(new Bubble(x,y));
+				//GamePlayerBubble.spaceListener(x,y);
+			//}
 			break;
 		}
 		
@@ -91,9 +104,13 @@ public class KeyListener extends KeyAdapter {
 			pressedKeyDown = false;
 			break;
 		case KeyEvent.VK_SPACE:
-			pushSpace =false;
+			pressedKeySpaece = false;
 			break;
 		}
+	}
+	
+	public Boolean isPressedKeySpaece() {
+		return pressedKeySpaece;
 	}
 	
 	public void setScreenGraphics(Graphics screenGraphics) {

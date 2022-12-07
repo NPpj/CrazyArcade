@@ -1,14 +1,15 @@
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 
 public class Stage implements Runnable{
 	private Thread th;
-	public static int cnt; // 무한루프를 카운터 하기 위한 변수
 	
-	private Image tileImg = null;
+	private Image tileImg = null; // 맵 타일
 	public static final int BLOCK_W = 51;
 	public static final int BLOCK_H = 62;
 	public static final int START_W= 25;
@@ -18,7 +19,9 @@ public class Stage implements Runnable{
 	private Image itemImg = null;
 	private int item_X, item_Y;
 	
-	private Monster boss = null;
+	private Monster boss = null; // 보스
+	
+	
 	
 	public static int [][] map = {
 			{1,0,0,0,1,1,0,0,0,1,1,0,0,0,1},
@@ -51,7 +54,7 @@ public class Stage implements Runnable{
 	
 	public void drawTile(Graphics g) {
 		//super(START_W +BLOCK_W*x, START_H+BLOCK_H*y, BLOCK_W,BLOCK_H,g);
-		Image temp_img = null;
+		Image tileImg = null;
 		g.setClip(null);
 		// 초기 맵 깔기
 		for (int y = 12; y >= 0; y--) {
@@ -61,17 +64,19 @@ public class Stage implements Runnable{
 					break;
 				case 1:
 					tileImg = new ImageIcon(Stage.class.getResource("/assets/map/forest/block/block_1.png")).getImage();
+					g.drawImage(tileImg, START_W +BLOCK_W*x, START_H+BLOCK_H*y, null);
 					break;
 				case 2:
 					tileImg = new ImageIcon(Stage.class.getResource("/assets/map/forest/block/block_4.png")).getImage();
+					g.drawImage(tileImg, START_W +BLOCK_W*x, START_H+BLOCK_H*y, null);
 					break;
 				case 3:
 					tileImg = new ImageIcon(Stage.class.getResource("/assets/map/forest/block/block_7.png")).getImage();
+					g.drawImage(tileImg, START_W +BLOCK_W*x, START_H+BLOCK_H*y, null);
 					break;
 				}
-				g.drawImage(tileImg, START_W +BLOCK_W*x, START_H+BLOCK_H*y, null);
+				
 			}
-			;
 		}
 	}
 	
@@ -90,31 +95,37 @@ public class Stage implements Runnable{
 		}
 	}
 	
+	
+	
 	public void drawItems(Graphics g) {
+		// super(Tile.START_W + Tile.BLOCK_W *x, Tile.START_H + Tile.BLOCK_H *y);
 		for(int i = 0; i< itemList.size(); i++) {
 			itemImg = null;
 			if(itemList.get(i) instanceof ItemSpeed
 					&& map[itemList.get(i).getY()][itemList.get(i).getX()] == 0) {
 				ItemSpeed speed = (ItemSpeed)itemList.get(i);
 				itemImg = speed.getItemSpeed();
-				item_X = speed.getX(); item_Y = speed.getY();
+				item_X = Tile.START_W + Tile.BLOCK_W *speed.getX(); 
+				item_Y = Tile.START_H + Tile.BLOCK_H *speed.getY()-20;
 			}
 			else if(itemList.get(i) instanceof ItemBubble
 					&& map[itemList.get(i).getY()][itemList.get(i).getX()] == 0) {
 				ItemBubble bubble = (ItemBubble)itemList.get(i);
 				itemImg = bubble.getItemBubble();
-				item_X = bubble.getX(); item_Y = bubble.getY();
+				item_X = Tile.START_W + Tile.BLOCK_W *bubble.getX(); 
+				item_Y = Tile.START_H + Tile.BLOCK_H *bubble.getY()-20;
 			}
 			else if(itemList.get(i) instanceof ItemFluid
 					&& map[itemList.get(i).getY()][itemList.get(i).getX()] == 0) {
 				ItemFluid fluid = (ItemFluid)itemList.get(i);
 				itemImg = fluid.getItemFluid();
-				item_X = fluid.getX(); item_Y = fluid.getY();
+				item_X = Tile.START_W + Tile.BLOCK_W *fluid.getX(); 
+				item_Y = Tile.START_H + Tile.BLOCK_H *fluid.getY()-20;
 			}
 			if(itemImg != null) {
 				g.setClip(item_X, item_Y, 56, 70);
-				if (cnt/10 % 2 == 0) g.drawImage(itemImg, item_X - ( 56 * 0 ), item_Y, null);
-				else if(cnt/10% 2 == 1) g.drawImage(itemImg, item_X - ( 56 * 1 ), item_Y, null);
+				if (GamingView.cnt/10 % 2 == 0) g.drawImage(itemImg, item_X - ( 56 * 0 ), item_Y, null);
+				else if(GamingView.cnt/10% 2 == 1) g.drawImage(itemImg, item_X - ( 56 * 1 ), item_Y, null);
 			}
 		}
 	}
@@ -149,7 +160,6 @@ public class Stage implements Runnable{
 	
 	@Override
 	public void run() {
-		cnt++;
 		makeItems(new ItemSpeed(1,3));
 		makeItems(new ItemSpeed(12,3));
 		makeItems(new ItemSpeed(7,6));
