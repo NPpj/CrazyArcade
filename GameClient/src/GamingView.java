@@ -19,22 +19,18 @@ import java.util.Timer;
 import java.awt.Color;
 
 public class GamingView extends JFrame implements Runnable {
+	GameUser user = GameUser.getInstance();
 	private ListenNetwork net;
-	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
-	private Socket socket; // 연결소켓
 	private ObjectInputStream ois;
 	public static ObjectOutputStream oos;
-	// private String userName;
-	GameUser user = GameUser.getInstance();
 	public static int userIndex;
 
 	private Image screenImage;
 	public static Graphics screenGraphics;
 	private Graphics img_g; // 이중 버퍼림 위함
-	// private Container c;
 
 	private Thread th;
-	public static int cnt; // 무한루프를 카운터 하기 위한 변수
+	public static long cnt; // 무한루프를 카운터 하기 위한 변수
 	private ImageObserver observer = this;
 
 	public static final int PLAYER_LEFT_RIGHT_MOVING_FRAME = 8;
@@ -48,14 +44,21 @@ public class GamingView extends JFrame implements Runnable {
 
 	private Image background = backgroundImage;
 
-	public static KeyListener keyListener;
+	// 스테이지 생성
+	public static Stage stage = new Stage();
+	public static GamePlayerBubble bubbleThread = new GamePlayerBubble();
+
+	private KeyListener keyListener;
 	public static ArrayList<GamePlayer> playerList = new ArrayList<>(); // 게임 플레이어 리스트
 	private int playerNum;
 	public static int roomNum;
 	
 	// 초기 플레이어 x, y 좌표
-	private int[] init_X = {200, 275, 480, 530};
-	private int[] init_Y = {790, 790, 790, 790};
+	private int[] init_X = { 200, 275, 480, 530 };
+	private int[] init_Y = { 790, 790, 790, 790 };
+
+	// 보스 생성
+	public static Monster boss = new Monster(320, 100);
 	
 	// 블록 크기 
 	public static final int BLOCK_W = 50;
@@ -64,7 +67,7 @@ public class GamingView extends JFrame implements Runnable {
 	public static final int GRASS_H = 50;
 	public static final int FLOWER_W = 60;
 	public static final int FLOWER_H = 70;
-	
+
 	/*
 	 * //방 정보 서버로 넘기기 -> 캐릭터 움직일 때 마다. ChatMsg obcm = new ChatMsg(userName, "101",
 	 * RoomInfo); SendObject(obcm);
@@ -78,48 +81,19 @@ public class GamingView extends JFrame implements Runnable {
 		}
 	}
 
-	// 물풍선 객체 저장
-	public static ArrayList<String> Item_XY = new ArrayList();
-	public static ArrayList<Bubble> bubbleList = new ArrayList();
-	public static ArrayList<Wave> waveList = new ArrayList();
-
-	// 아이템 위치
-	public void setItemPos() {
-		Item_XY.add("2,2,1");
-		Item_XY.add("1,3,2");
-		Item_XY.add("8,3,3");
-		Item_XY.add("11,1,1");
-		Item_XY.add("12,3,2");
-		Item_XY.add("1,6,3");
-		Item_XY.add("3,7,1");
-		Item_XY.add("7,6,2");
-		Item_XY.add("11,5,3");
-		Item_XY.add("13,6,1");
-		Item_XY.add("2,10,2");
-		Item_XY.add("1,11,3");
-		Item_XY.add("8,9,1");
-		Item_XY.add("6,11,2");
-		Item_XY.add("13,11,3");
-	}
-	
-	// space바 누른 키 저장
-	public static ArrayList<String> Bubble_XY = new ArrayList();
-
 	public GamingView(int roomNum, int userIndex, int playerNum) {
 		this.userIndex=userIndex;
 		this.playerNum=playerNum;
 		this.roomNum=roomNum;
 		this.net = user.getNet();
 		this.ois = net.getOIS();
-		this.oos= net.getOOS();
-		
-		getContentPane().setBackground(new Color(255, 255, 0));
+		this.oos = net.getOOS();
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // JFrame이 정상적으로 종료되게
 		setBounds(100, 100, Frame_W, Frame_H);
 		setTitle("CrazyArcade");
 		setResizable(false);
 		setLocationRelativeTo(null);
-		// setSize(998,773);
 		setVisible(true);
 
 		keyListener = new KeyListener();
@@ -132,9 +106,10 @@ public class GamingView extends JFrame implements Runnable {
 			playerList.get(i).init(init_X[i], init_Y[i], "down");
 		}
 		
-
-		// 초기 아이템 위치 설정
-		setItemPos();
+		// 맵의 아이템 그려줌
+		stage.start();
+		// 물풍선
+		bubbleThread.start();
 
 		// 스레드 시작
 		start();
@@ -149,7 +124,6 @@ public class GamingView extends JFrame implements Runnable {
 	public void run() { // 스레드 메소드, 무한 루프
 		while (true) {
 			try {
-//				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
 				repaint();
 				Thread.sleep(20);
@@ -157,7 +131,7 @@ public class GamingView extends JFrame implements Runnable {
 				cnt++;
 
 			} catch (Exception e) {
-				System.out.println("쓰레드 오류");
+				System.out.println("쓰레드 오류 " + e.getMessage());
 			}
 		}
 	}
@@ -190,21 +164,12 @@ public class GamingView extends JFrame implements Runnable {
 
 			}
 		}
-		
-
 		// 꽃, 박스 그리기
-		drawTile();
+		stage.drawTile(g);
+		stage.drawBoss(g);
+		stage.drawItems(g);
+		bubbleThread.drawBubbles(g);
 
-		addBubble();
-		
-		drawPlayer();
-		
-		drawItems();
-		
-//		viewWave();
-//		eatItem();
-		
-//
 //		// player 상태에 따른 이미지 변경
 //		if (playerList.get(userIndex).getPlayerState() == "live")
 //			drawPlayer();
@@ -214,10 +179,10 @@ public class GamingView extends JFrame implements Runnable {
 //			diePlayer();
 //			playerList.get(userIndex).setPlayerState("dispose");
 //		}
-
 		this.repaint();
 	}
-
+	
+	/*
 	public void drawTile() {
 		Image temp_img = null;
 		screenGraphics.setClip(null);
@@ -244,14 +209,11 @@ public class GamingView extends JFrame implements Runnable {
 			;
 		}
 	}
-
-	public void drawMap() {
-		drawTile();
-	}
+	*/
 
 	public void drawPlayer() {
 		screenGraphics.setFont(new Font("Default", Font.BOLD, 20));
-		screenGraphics.drawString(Integer.toString(cnt), 50, 50);
+		screenGraphics.drawString(Long.toString(cnt), 50, 50);
 		// 위는 단순히 무한루프 적용여부와 케릭터 방향 체크를 위해
 		// 눈으로 보면서 테스트할 용도로 쓰이는 텍스트 표출입니다.
 		for(int i=0;i<playerNum;i++) {
@@ -306,6 +268,7 @@ public class GamingView extends JFrame implements Runnable {
 			screenGraphics.drawImage(img, x - (width * 0), y, this); // 케릭터가 움직이지 않으면 정지한 케릭터를 그립니다.
 	}
 
+	/*
 	public void viewWave() {
 		for(int i =0;i<waveList.size(); i++) {
 //			int x = waveList.get(i).getX();
@@ -340,11 +303,11 @@ public class GamingView extends JFrame implements Runnable {
 			    }	
 			};
 			timer.schedule(task, 2000); //실행 Task, 1초뒤 실행
-			
 
 		}
 	}
-	
+	*/
+
 	// 물줄기 그리기
 //	public void drawLine() {
 //		for (int i = 0; i < Bubble_XY.size(); i++) {
@@ -360,6 +323,7 @@ public class GamingView extends JFrame implements Runnable {
 //	}
 
 	// 블록 깨기
+	/*
 	public void breakBlock(int x, int y) {
 		int len = playerList.get(userIndex).waveLen;
 		for (int i = 1; i <= len; i++) {
@@ -374,7 +338,9 @@ public class GamingView extends JFrame implements Runnable {
 			playerList.get(userIndex).map[y][x] = 0;
 		}
 	}
+	*/
 
+	/*
 	// 아이템 그리기
 	public void drawItems() {
 		for (int i = 0; i < Item_XY.size(); i++) {
@@ -425,6 +391,7 @@ public class GamingView extends JFrame implements Runnable {
 
 		}
 	}
+	*/
 
 	// 죽기
 	public void diePlayer() {

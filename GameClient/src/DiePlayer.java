@@ -4,12 +4,12 @@ import java.awt.image.ImageObserver;
 import javax.swing.ImageIcon;
 
 public class DiePlayer extends addModel{
-	private int cnt;
+	private long cnt;
 	private ImageObserver observer;
 	private int x;
 	private int y;
 	
-	public DiePlayer(int x, int y, Graphics g, int cnt, ImageObserver observer) {
+	public DiePlayer(int x, int y, Graphics g, long cnt, ImageObserver observer) {
 		super(x,y,95,144,g);
 		
 		this.observer=observer;
