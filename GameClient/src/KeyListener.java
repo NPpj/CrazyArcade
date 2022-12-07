@@ -64,15 +64,15 @@ public class KeyListener extends KeyAdapter {
 			pressedKeyDown = true;
 			break;
 		case KeyEvent.VK_SPACE: // 물풍선 놓기 
-			if(GamingView.playerList.get(userIndex).getBubbleNum() < GamingView.playerList.get(userIndex).getMaxBubbleNum()) {
-				GamingView.playerList.get(userIndex).addBubbleNum();
+//			if(GamingView.playerList.get(userIndex).getBubbleNum() < GamingView.playerList.get(userIndex).getMaxBubbleNum()) {
+//				GamingView.playerList.get(userIndex).addBubbleNum();
 				// x,y 는 map 좌표 
 				int x = GamingView.playerList.get(userIndex).getMapX(GamingView.playerList.get(userIndex).getPos_X()-20);
 				int y = GamingView.playerList.get(userIndex).getMapY(GamingView.playerList.get(userIndex).getPos_Y()-10);
 //				GamingView.Bubble_XY.add(String.valueOf(x)+","+String.valueOf(y));
 				GameInfo obcm = new GameInfo("401", GamingView.roomNum, userIndex, String.valueOf(x)+","+String.valueOf(y));
 				SendObject(obcm);
-			}
+//			}
 			break;
 		}
 		

@@ -162,29 +162,25 @@ public class GamePlayer {
 	}
 	
 	public void moveToRight() {
-//		if(pos_X <= GROUND_END_X && map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0 && getPlayerState()=="live")
-		if(pos_X <= GROUND_END_X )
+		if(pos_X <= GROUND_END_X && map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0)
 			pos_X += PLAYER_MOVE;
 		
 		state = playerRightMove;
 	}
 	public void moveToLeft() {
-//		if(pos_X >= GROUND_START_X && map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0&& getPlayerState()=="live")
-		if(pos_X >= GROUND_START_X)
+		if(pos_X >= GROUND_START_X && map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0)
 			pos_X -= PLAYER_MOVE;
 		
 		state = playerLeftMove;
 	}
 	public void moveToUp() {
-//		if(pos_Y >= GROUND_START_Y && map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
-		if(pos_Y >= GROUND_START_Y)
+		if(pos_Y >= GROUND_START_Y && map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0)
 			pos_Y -= PLAYER_MOVE;
 		
 		state = playerUpMove;
 	}
 	public void moveToDown() {
-//		if(pos_Y <= GROUND_END_Y && map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
-		if(pos_Y <= GROUND_END_Y)
+		if(pos_Y <= GROUND_END_Y && map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0)
 			pos_Y += PLAYER_MOVE;
 		
 		state = playerDownMove;

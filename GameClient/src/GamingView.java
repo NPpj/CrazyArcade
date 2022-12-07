@@ -199,19 +199,20 @@ public class GamingView extends JFrame implements Runnable {
 		
 		drawPlayer();
 		
-//		drawItems();
-//		eatItem();
-
+		drawItems();
 		
-
+//		viewWave();
+//		eatItem();
+		
+//
 //		// player 상태에 따른 이미지 변경
-//		if (player.getPlayerState() == "live")
+//		if (playerList.get(userIndex).getPlayerState() == "live")
 //			drawPlayer();
-//		else if (player.getPlayerState() == "trap")
+//		else if (playerList.get(userIndex).getPlayerState() == "trap")
 //			trapPlayer();
-//		else if (player.getPlayerState() == "die") {
+//		else if (playerList.get(userIndex).getPlayerState() == "die") {
 //			diePlayer();
-//			player.setPlayerState("dispose");
+//			playerList.get(userIndex).setPlayerState("dispose");
 //		}
 
 		this.repaint();
@@ -256,6 +257,7 @@ public class GamingView extends JFrame implements Runnable {
 		for(int i=0;i<playerNum;i++) {
 			movePlayer(playerList.get(i).getState(), playerList.get(i).getPos_X(), playerList.get(i).getPos_Y(), 64, 100);
 		}
+		
 	}
 
 	public void movePlayer(Image img, int x, int y, int width, int height) {
@@ -266,7 +268,7 @@ public class GamingView extends JFrame implements Runnable {
 		String direction = playerList.get(userIndex).getDirection();
 
 		if (GamingView.playerList.get(userIndex).playerMove) {
-//			System.out.println("x:"+player.getMapX(player.getPos_X())+" y:"+player.getMapY(player.getPos_Y())+"("+player.getPos_X()+","+player.getPos_Y()+")");
+			System.out.println(userIndex+" : "+GamingView.playerList.get(userIndex).playerMove);
 			if (direction.equals("up") || direction.equals("down")) { // 케릭터의 움직임 여부를 판단합니다.
 				// 케릭터의 방향에 따라 걸어가는 모션을 취하는
 				// 케릭터 이미지를 시간차를 이용해 순차적으로 그립니다.
@@ -304,6 +306,15 @@ public class GamingView extends JFrame implements Runnable {
 			screenGraphics.drawImage(img, x - (width * 0), y, this); // 케릭터가 움직이지 않으면 정지한 케릭터를 그립니다.
 	}
 
+	public void viewWave() {
+		for(int i =0;i<waveList.size(); i++) {
+//			int x = waveList.get(i).getX();
+//			int y = waveList.get(i).getY();
+			waveList.get(i).drawImage();
+
+		}
+	}
+	
 	public void addBubble() {
 		for (int i = 0; i < Bubble_XY.size(); i++) {
 			String str = Bubble_XY.get(i);
@@ -323,16 +334,13 @@ public class GamingView extends JFrame implements Runnable {
 			    public void run() {
 			    	Bubble_XY.remove(str);
 			    	breakBlock(x,y);
-//			    	playerList.get(userIndex).setBubbleNum(Bubble_XY.size());
-//			    	System.out.println("================="+playerList.get(userIndex).getBubbleNum());
+			    	playerList.get(userIndex).setBubbleNum(Bubble_XY.size());
+			    	Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
+					waveList.add(wave);
 			    }	
 			};
 			timer.schedule(task, 2000); //실행 Task, 1초뒤 실행
 			
-//			// 물줄기 객체 추가
-//			Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
-//			waveList.add(wave);
-//			wave.drawImage();
 
 		}
 	}
