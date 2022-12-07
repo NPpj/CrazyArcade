@@ -55,15 +55,15 @@ class ListenNetwork extends Thread {
 		switch(n) {
 		case "1":
 			GamingView.playerList.get(userIndex).addMaxBubbleNum();
-			GamingView.Item_XY.remove(i);
+			Stage.itemList.remove(i);
 			break;
 		case "2":
-			GamingView.Item_XY.remove(i);
+			Stage.itemList.remove(i);
 			break;
 		case "3":
 			if (GamingView.playerList.get(userIndex).PLAYER_MOVE < 8)
 				GamingView.playerList.get(userIndex).PLAYER_MOVE += 2;
-			GamingView.Item_XY.remove(i);
+			Stage.itemList.remove(i);
 			break;
 		}
 	}

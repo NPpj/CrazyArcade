@@ -45,7 +45,7 @@ public abstract class addModel {
 		g.drawImage(getImage(), x, y, null);
 	}
 	
-	public void drawAllImage(Image img, int x,int y, int cnt, int n,ImageObserver observer) {
+	public void drawAllImage(Image img, int x,int y, long cnt, int n,ImageObserver observer) {
 		if(n==4) {
 			g.setClip(x , y, 56, 54);
 			setWidth(56);

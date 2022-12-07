@@ -4,33 +4,30 @@ import java.awt.image.ImageObserver;
 
 import javax.swing.ImageIcon;
 
-public class Item extends addModel{
-	private int cnt;
-	private ImageObserver observer;
+public class Item {
+	//int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
+	//int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
 	private int x;
 	private int y;
-	private Image img;
 	
-	public Item(String type, int x, int y, Graphics g, int cnt, ImageObserver observer) {
-		super(x,y,56,70,g);
-		
-		this.observer=observer;
-		this.cnt=cnt;
-		
-		g.setClip(x , y, 56, 70);
-		
-		if(type == "물풍선")
-			img =new ImageIcon(GamePlayer.class.getResource("/assets/item/bubble.png")).getImage();
-		else if(type =="물줄기")
-			img =new ImageIcon(GamePlayer.class.getResource("/assets/item/fluid.png")).getImage();
-		else
-			img =new ImageIcon(GamePlayer.class.getResource("/assets/item/roller.png")).getImage();
-		
-	
-		setImage(img);
+	public Item(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
-	public void drawImage() {
-		drawAllImage(getImage(),getX(),getY(),cnt,3,observer);
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 }
