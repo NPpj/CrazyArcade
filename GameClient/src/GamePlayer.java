@@ -7,7 +7,9 @@ import javax.swing.ImageIcon;
 import com.sun.tools.javac.Main;
 
 public class GamePlayer {
-	public GamePlayer() {}
+	public GamePlayer(int userIndex) {
+		this.userIndex=userIndex;
+	}
 	
 	public static final int SCREEN_X = 998, SCREEN_Y = 773;
 	public static int PLAYER_MOVE=3;
@@ -20,6 +22,8 @@ public class GamePlayer {
 	private int maxBubbleNum = 3;
 	private int bubbleNum = 0;
 	public int waveLen = 1;
+	private int userIndex;
+	public static boolean playerMove=false;
 	
 	private String playerState = "live";
 	
@@ -110,6 +114,24 @@ public class GamePlayer {
 	
 	public void setDirection(String direction) {
 		this.direction = direction;
+		switch(direction) {
+			case "up":
+				GamingView.playerList.get(userIndex).moveToUp();
+				GamingView.playerList.get(userIndex).playerMove = true;
+				break;
+			case "down":
+				GamingView.playerList.get(userIndex).moveToDown();
+				GamingView.playerList.get(userIndex).playerMove = true;
+				break;
+			case "left":
+				GamingView.playerList.get(userIndex).moveToLeft();
+				GamingView.playerList.get(userIndex).playerMove = true;
+				break;
+			case "right":
+				GamingView.playerList.get(userIndex).moveToRight();
+				GamingView.playerList.get(userIndex).playerMove = true;
+				break;
+		}
 	}
 	
 	public int getPos_X() {
@@ -177,29 +199,25 @@ public class GamePlayer {
 	}*/
 
 	public void moveToRight() {
-		if(pos_X <= GROUND_END_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0 && getPlayerState()=="live")
-//		if(pos_X <= GROUND_END_X )
+		if(pos_X <= GROUND_END_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X+1)] == 0)
 			pos_X += PLAYER_MOVE;
 		
 		state = playerRightMove;
 	}
 	public void moveToLeft() {
-		if(pos_X >= GROUND_START_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0&& getPlayerState()=="live")
-//		if(pos_X >= GROUND_START_X)
+		if(pos_X >= GROUND_START_X && Stage.map[getMapY(pos_Y)][getMapX(pos_X-50)] == 0)
 			pos_X -= PLAYER_MOVE;
 		
 		state = playerLeftMove;
 	}
 	public void moveToUp() {
-		if(pos_Y >= GROUND_START_Y && Stage.map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
-//		if(pos_Y >= GROUND_START_Y)
+		if(pos_Y >= GROUND_START_Y && Stage.map[getMapY(pos_Y-3)][getMapX(pos_X-1)] == 0)
 			pos_Y -= PLAYER_MOVE;
 		
 		state = playerUpMove;
 	}
 	public void moveToDown() {
-		if(pos_Y <= GROUND_END_Y && Stage.map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0 && getPlayerState()=="live")
-//		if(pos_Y <= GROUND_END_Y)
+		if(pos_Y <= GROUND_END_Y && Stage.map[getMapY(pos_Y+10)][getMapX(pos_X-1)] == 0)
 			pos_Y += PLAYER_MOVE;
 		
 		state = playerDownMove;
@@ -230,6 +248,10 @@ public class GamePlayer {
 	
 	public void downBubbleNum() {
 		this.bubbleNum -= 1;
+	}
+	
+	public void setBubbleNum(int n) {
+		this.bubbleNum =n;
 	}
 	
 	public int getBubbleNum() {

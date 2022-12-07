@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 
 public class Stage implements Runnable{
 	private Thread th;
+	private int userIndex = GamingView.userIndex;
 	
 	private Image tileImg = null; // 맵 타일
 	public static final int BLOCK_W = 51;
@@ -15,7 +16,7 @@ public class Stage implements Runnable{
 	public static final int START_W= 25;
 	public static final int START_H = 62;
 	
-	private ArrayList<Item> itemList = new ArrayList<>(); // 아이템 담을 리스트
+	public static ArrayList<Item> itemList = new ArrayList<>(); // 아이템 담을 리스트
 	private Image itemImg = null;
 	private int item_X, item_Y;
 	
@@ -81,7 +82,7 @@ public class Stage implements Runnable{
 	}
 	
 	public void breakBlock(int x, int y) {
-		int len = GamingView.player.waveLen;
+		int len = GamingView.playerList.get(userIndex).waveLen;
 		for (int i = 1; i <= len; i++) {
 			if (x >= i)
 				map[y][x - i] = 0;
@@ -133,15 +134,15 @@ public class Stage implements Runnable{
 	public void getItems() {
 		for(int i=itemList.size()-1; i>=0; i--) {
 			// 아이템의 위치와 플레이어의 위치가 같다면
-			if (GamingView.player.getMapX(GamingView.player.getPos_X()) == itemList.get(i).getX()
-					&& GamingView.player.getMapY(GamingView.player.getPos_Y()) == itemList.get(i).getY()) {
+			if (GamingView.playerList.get(userIndex).getMapX(GamingView.playerList.get(userIndex).getPos_X()) == itemList.get(i).getX()
+					&& GamingView.playerList.get(userIndex).getMapY(GamingView.playerList.get(userIndex).getPos_Y()) == itemList.get(i).getY()) {
 				// 스피드 아이템을 먹었다면
 				if(itemList.get(i) instanceof ItemSpeed) {
-					if (GamingView.player.PLAYER_MOVE < 8)
-						GamingView.player.PLAYER_MOVE += 2;
+					if (GamingView.playerList.get(userIndex).PLAYER_MOVE < 8)
+						GamingView.playerList.get(userIndex).PLAYER_MOVE += 2;
 				}
 				else if(itemList.get(i) instanceof ItemBubble) {
-					GamingView.player.addBubbleNum();
+					GamingView.playerList.get(userIndex).addBubbleNum();
 				}
 				// 아이템 리스트에서 삭제하여 화면에 보이지 않게한다.
 				itemList.remove(i);

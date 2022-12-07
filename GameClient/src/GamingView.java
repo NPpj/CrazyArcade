@@ -22,7 +22,8 @@ public class GamingView extends JFrame implements Runnable {
 	GameUser user = GameUser.getInstance();
 	private ListenNetwork net;
 	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	public static ObjectOutputStream oos;
+	public static int userIndex;
 
 	private Image screenImage;
 	public static Graphics screenGraphics;
@@ -48,16 +49,18 @@ public class GamingView extends JFrame implements Runnable {
 	public static GamePlayerBubble bubbleThread = new GamePlayerBubble();
 
 	private KeyListener keyListener;
-	// 플레이어 생성
-	public static GamePlayer player = new GamePlayer();
+	public static ArrayList<GamePlayer> playerList = new ArrayList<>(); // 게임 플레이어 리스트
+	private int playerNum;
+	public static int roomNum;
+	
 	// 초기 플레이어 x, y 좌표
-	private int[] init_X = { 225, 275, 480, 530 };
+	private int[] init_X = { 200, 275, 480, 530 };
 	private int[] init_Y = { 790, 790, 790, 790 };
 
 	// 보스 생성
 	public static Monster boss = new Monster(320, 100);
-
-	// 블록 크기
+	
+	// 블록 크기 
 	public static final int BLOCK_W = 50;
 	public static final int BLOCK_H = 60;
 	public static final int GRASS_W = 50;
@@ -78,34 +81,10 @@ public class GamingView extends JFrame implements Runnable {
 		}
 	}
 
-//	// 물풍선 객체 저장
-//	public static ArrayList<String> Item_XY = new ArrayList();
-//	public static ArrayList<Bubble> bubbleList = new ArrayList();
-//	public static ArrayList<Wave> waveList = new ArrayList();
-
-//	// 아이템 위치
-//	public void setItemPos() {
-//		Item_XY.add("2,2,1");
-//		Item_XY.add("1,3,2");
-//		Item_XY.add("8,3,3");
-//		Item_XY.add("11,1,1");
-//		Item_XY.add("12,3,2");
-//		Item_XY.add("1,6,3");
-//		Item_XY.add("3,7,1");
-//		Item_XY.add("7,6,2");
-//		Item_XY.add("11,5,3");
-//		Item_XY.add("13,6,1");
-//		Item_XY.add("2,10,2");
-//		Item_XY.add("1,11,3");
-//		Item_XY.add("8,9,1");
-//		Item_XY.add("6,11,2");
-//		Item_XY.add("13,11,3");
-//	}
-
-	// space바 누른 키 저장
-	// public static ArrayList<String> Bubble_XY = new ArrayList();
-
-	public GamingView(int roomNum, int userIndex) {
+	public GamingView(int roomNum, int userIndex, int playerNum) {
+		this.userIndex=userIndex;
+		this.playerNum=playerNum;
+		this.roomNum=roomNum;
 		this.net = user.getNet();
 		this.ois = net.getOIS();
 		this.oos = net.getOOS();
@@ -121,9 +100,12 @@ public class GamingView extends JFrame implements Runnable {
 		// 키 리스너 생성
 		addKeyListener(keyListener);
 
-		// 플레이어 초기 설정
-		player.init(init_X[userIndex], init_Y[userIndex], "down");
-
+		// 플레이어들 생성
+		for(int i=0;i<playerNum;i++) {
+			playerList.add(new GamePlayer(i));
+			playerList.get(i).init(init_X[i], init_Y[i], "down");
+		}
+		
 		// 맵의 아이템 그려줌
 		stage.start();
 		// 물풍선
@@ -142,13 +124,7 @@ public class GamingView extends JFrame implements Runnable {
 	public void run() { // 스레드 메소드, 무한 루프
 		while (true) {
 			try {
-//				System.out.println("쓰레드 실행중");
 				keyListener.keyProcess();
-				if (keyListener.playerMove) {
-					String PlayerMovingData = player.getDirection();
-//					ChatMsg obcm = new ChatMsg(user.getId(), "300", PlayerMovingData);
-//					SendObject(obcm);
-				}
 				repaint();
 				Thread.sleep(20);
 
@@ -188,51 +164,62 @@ public class GamingView extends JFrame implements Runnable {
 
 			}
 		}
-		
 		// 꽃, 박스 그리기
 		stage.drawTile(g);
 		stage.drawBoss(g);
-//		drawItems();
-		// eatItem();
 		stage.drawItems(g);
 		bubbleThread.drawBubbles(g);
-		
 
-		// addBubble();
-
-		// player 상태에 따른 이미지 변경
-		if (player.getPlayerState() == "live")
-			drawPlayer();
-		else if (player.getPlayerState() == "trap")
-			trapPlayer();
-		else if (player.getPlayerState() == "die") {
-			diePlayer();
-			player.setPlayerState("dispose");
-		}
-		
+//		// player 상태에 따른 이미지 변경
+//		if (playerList.get(userIndex).getPlayerState() == "live")
+//			drawPlayer();
+//		else if (playerList.get(userIndex).getPlayerState() == "trap")
+//			trapPlayer();
+//		else if (playerList.get(userIndex).getPlayerState() == "die") {
+//			diePlayer();
+//			playerList.get(userIndex).setPlayerState("dispose");
+//		}
 		this.repaint();
 	}
-
+	
 	/*
-	 * public void drawTile() { Image temp_img = null; screenGraphics.setClip(null);
-	 * // 초기 맵 깔기 for (int y = 12; y >= 0; y--) { for (int x = 0; x < 15; x++) {
-	 * switch (player.map[y][x]) { case 0: break; case 1: Tile block = new Tile(x,
-	 * y, "block1", screenGraphics); block.drawImage(); break; case 2: Tile flower1
-	 * = new Tile(x, y, "flower1", screenGraphics); flower1.drawImage(); break; case
-	 * 3: Tile flower2 = new Tile(x, y, "flower2", screenGraphics);
-	 * flower2.drawImage(); break; } } ; } }
-	 */
-
-	/*
-	 * public void drawMap() { drawTile(); }
-	 */
+	public void drawTile() {
+		Image temp_img = null;
+		screenGraphics.setClip(null);
+		// 초기 맵 깔기
+		for (int y = 12; y >= 0; y--) {
+			for (int x = 0; x < 15; x++) {
+				switch (playerList.get(userIndex).map[y][x]) {
+				case 0:
+					break;
+				case 1:
+					Tile block = new Tile(x, y, "block1", screenGraphics);
+					block.drawImage();
+					break;
+				case 2:
+					Tile flower1 = new Tile(x, y, "flower1", screenGraphics);
+					flower1.drawImage();
+					break;
+				case 3:
+					Tile flower2 = new Tile(x, y, "flower2", screenGraphics);
+					flower2.drawImage();
+					break;
+				}
+			}
+			;
+		}
+	}
+	*/
 
 	public void drawPlayer() {
 		screenGraphics.setFont(new Font("Default", Font.BOLD, 20));
 		screenGraphics.drawString(Long.toString(cnt), 50, 50);
 		// 위는 단순히 무한루프 적용여부와 케릭터 방향 체크를 위해
 		// 눈으로 보면서 테스트할 용도로 쓰이는 텍스트 표출입니다.
-		movePlayer(player.getState(), player.getPos_X(), player.getPos_Y(), 64, 100);
+		for(int i=0;i<playerNum;i++) {
+			movePlayer(playerList.get(i).getState(), playerList.get(i).getPos_X(), playerList.get(i).getPos_Y(), 64, 100);
+		}
+		
 	}
 
 	public void movePlayer(Image img, int x, int y, int width, int height) {
@@ -240,10 +227,10 @@ public class GamingView extends JFrame implements Runnable {
 		// 받은 값을 이용해서 위의 이미지칩셋에서 플레이어를 잘라내 표출하도록 계산하는 메소드 입니다.
 		screenGraphics.setClip(x, y, width, height);
 		// 현재 좌표에서 케릭터의 크기 만큼 이미지를 잘라 그립니다.
-		String direction = player.getDirection();
+		String direction = playerList.get(userIndex).getDirection();
 
-		if (keyListener.playerMove) {
-//			System.out.println("x:"+player.getMapX(player.getPos_X())+" y:"+player.getMapY(player.getPos_Y())+"("+player.getPos_X()+","+player.getPos_Y()+")");
+		if (GamingView.playerList.get(userIndex).playerMove) {
+			System.out.println(userIndex+" : "+GamingView.playerList.get(userIndex).playerMove);
 			if (direction.equals("up") || direction.equals("down")) { // 케릭터의 움직임 여부를 판단합니다.
 				// 케릭터의 방향에 따라 걸어가는 모션을 취하는
 				// 케릭터 이미지를 시간차를 이용해 순차적으로 그립니다.
@@ -282,27 +269,44 @@ public class GamingView extends JFrame implements Runnable {
 	}
 
 	/*
-	 * public void addBubble() { for (int i = 0; i < Bubble_XY.size(); i++) { String
-	 * str = Bubble_XY.get(i); String[] xy = Bubble_XY.get(i).split(",");
-	 * 
-	 * int x = Integer.parseInt(xy[0]); int y = Integer.parseInt(xy[1]);
-	 * 
-	 * // 물풍선 객체 추가 Bubble bubble = new Bubble(x, y, screenGraphics, cnt, observer);
-	 * bubbleList.add(bubble); bubble.drawImage();
-	 * 
-	 * Timer timer=new Timer(); TimerTask task=new TimerTask(){
-	 * 
-	 * @Override public void run() { Bubble_XY.remove(str); stage.breakBlock(x,y);
-	 * player.downBubbleNum(); } }; timer.schedule(task, 2000); //실행 Task, 1초뒤 실행
-	 */
+	public void viewWave() {
+		for(int i =0;i<waveList.size(); i++) {
+//			int x = waveList.get(i).getX();
+//			int y = waveList.get(i).getY();
+			waveList.get(i).drawImage();
 
-//			// 물줄기 객체 추가
-//			Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
-//			waveList.add(wave);
-//			wave.drawImage();
+		}
+	}
+	
+	public void addBubble() {
+		for (int i = 0; i < Bubble_XY.size(); i++) {
+			String str = Bubble_XY.get(i);
+			String[] xy = Bubble_XY.get(i).split(",");
 
-//		}
-//	}
+			int x = Integer.parseInt(xy[0]);
+			int y = Integer.parseInt(xy[1]);
+
+			// 물풍선 객체 추가
+			Bubble bubble = new Bubble(x, y, screenGraphics, cnt, observer);
+			bubbleList.add(bubble);
+			bubble.drawImage();
+
+			Timer timer=new Timer();
+			TimerTask task=new TimerTask(){
+			    @Override
+			    public void run() {
+			    	Bubble_XY.remove(str);
+			    	breakBlock(x,y);
+			    	playerList.get(userIndex).setBubbleNum(Bubble_XY.size());
+			    	Wave wave = new Wave(x, y, screenGraphics, cnt, observer);
+					waveList.add(wave);
+			    }	
+			};
+			timer.schedule(task, 2000); //실행 Task, 1초뒤 실행
+
+		}
+	}
+	*/
 
 	// 물줄기 그리기
 //	public void drawLine() {
@@ -320,67 +324,85 @@ public class GamingView extends JFrame implements Runnable {
 
 	// 블록 깨기
 	/*
-	 * public void breakBlock(int x, int y) { int len = player.waveLen; for (int i =
-	 * 1; i <= len; i++) { if (x >= i) player.map[y][x - i] = 0; if (x + i < 15)
-	 * player.map[y][x + i] = 0; if (y >= i) player.map[y - i][x] = 0; if (y + i <
-	 * 13) player.map[y + i][x] = 0; player.map[y][x] = 0; } }
-	 */
+	public void breakBlock(int x, int y) {
+		int len = playerList.get(userIndex).waveLen;
+		for (int i = 1; i <= len; i++) {
+			if (x >= i)
+				playerList.get(userIndex).map[y][x - i] = 0;
+			if (x + i < 15)
+				playerList.get(userIndex).map[y][x + i] = 0;
+			if (y >= i)
+				playerList.get(userIndex).map[y - i][x] = 0;
+			if (y + i < 13)
+				playerList.get(userIndex).map[y + i][x] = 0;
+			playerList.get(userIndex).map[y][x] = 0;
+		}
+	}
+	*/
 
-//	// 아이템 그리기
-//	public void drawItems() {
-//		for (int i = 0; i < Item_XY.size(); i++) {
-//			String[] xy = Item_XY.get(i).split(",");
-//			int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
-//			int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
-//			int type = Integer.parseInt(xy[2]);
-//			if (player.map[Integer.parseInt(xy[1])][Integer.parseInt(xy[0])] == 0) {
-//				if (type % 3 == 0) {
-//					Item item = new Item("물풍선", item_x, item_y, screenGraphics, cnt, observer);
-//					item.drawImage();
-//				} else if (type % 3 == 1) {
-//					Item item2 = new Item("물줄기", item_x, item_y, screenGraphics, cnt, observer);
-//					item2.drawImage();
-//				} else {
-//					Item item3 = new Item("달리기", item_x, item_y, screenGraphics, cnt, observer);
-//					item3.drawImage();
-//				}
-//			}
-//		}
-//	}
-//
-//	// 아이템 먹기
-//	public void eatItem() {
-//		for (int i = 0; i < Item_XY.size(); i++) {
-//			String[] xy = Item_XY.get(i).split(",");
-//			int type = Integer.parseInt(xy[2]);
-//			if (player.getMapX(player.getPos_X()) == Integer.parseInt(xy[0])
-//					&& player.getMapY(player.getPos_Y()) == Integer.parseInt(xy[1])) {
-//				if (type % 3 == 0) { // 물풍선 먹기
-//					player.addMaxBubbleNum();
+	/*
+	// 아이템 그리기
+	public void drawItems() {
+		for (int i = 0; i < Item_XY.size(); i++) {
+			String[] xy = Item_XY.get(i).split(",");
+			int item_x = Tile.START_W + Tile.BLOCK_W * Integer.parseInt(xy[0]);
+			int item_y = Tile.START_H + Tile.BLOCK_H * Integer.parseInt(xy[1]) - 20;
+			int type = Integer.parseInt(xy[2]);
+			if (playerList.get(userIndex).map[Integer.parseInt(xy[1])][Integer.parseInt(xy[0])] == 0) {
+				if (type % 3 == 0) {
+					Item item = new Item("물풍선", item_x, item_y, screenGraphics, cnt, observer);
+					item.drawImage();
+				} else if (type % 3 == 1) {
+					Item item2 = new Item("물줄기", item_x, item_y, screenGraphics, cnt, observer);
+					item2.drawImage();
+				} else {
+					Item item3 = new Item("달리기", item_x, item_y, screenGraphics, cnt, observer);
+					item3.drawImage();
+				}
+			}
+		}
+	}
+
+	// 아이템 먹기
+	public void eatItem() {
+		for (int i = 0; i < Item_XY.size(); i++) {
+			String[] xy = Item_XY.get(i).split(",");
+			int type = Integer.parseInt(xy[2]);
+			if (playerList.get(userIndex).getMapX(playerList.get(userIndex).getPos_X()) == Integer.parseInt(xy[0])
+					&& playerList.get(userIndex).getMapY(playerList.get(userIndex).getPos_Y()) == Integer.parseInt(xy[1])) {
+				if (type % 3 == 0) { // 물풍선 먹기
+//					playerList.get(userIndex).addMaxBubbleNum();
 //					Item_XY.remove(i);
-//				} else if (type % 3 == 1) { // 물줄기 먹기
+					GameInfo obcm = new GameInfo("402", GamingView.roomNum, userIndex, "1,"+i);
+					SendObject(obcm);
+				} else if (type % 3 == 1) { // 물줄기 먹기
 //					Item_XY.remove(i);
-////					player.waveLen += 1;	
-//				} else { // 달리기 먹기
-//					if (player.PLAYER_MOVE < 8)
-//						player.PLAYER_MOVE += 2;
+					GameInfo obcm = new GameInfo("402", GamingView.roomNum, userIndex, "2,"+i);
+					SendObject(obcm);
+//					player.waveLen += 1;	
+				} else { // 달리기 먹기
+					GameInfo obcm = new GameInfo("402", GamingView.roomNum, userIndex, "3,"+i);
+					SendObject(obcm);
+//					if (playerList.get(userIndex).PLAYER_MOVE < 8)
+//						playerList.get(userIndex).PLAYER_MOVE += 2;
 //					Item_XY.remove(i);
-//				}
-//			}
-//
-//		}
-//	}
+				}
+			}
+
+		}
+	}
+	*/
 
 	// 죽기
 	public void diePlayer() {
-		DiePlayer die = new DiePlayer(player.getPos_X() - 10, player.getPos_Y() - 40, screenGraphics, cnt, observer);
+		DiePlayer die = new DiePlayer(playerList.get(userIndex).getPos_X() - 10, playerList.get(userIndex).getPos_Y() - 40, screenGraphics, cnt, observer);
 		die.drawImage();
 
 	}
 
 	// 갇히기
 	public void trapPlayer() {
-		TrapPlayer trap = new TrapPlayer(player.getPos_X() - 10, player.getPos_Y(), screenGraphics, cnt, observer);
+		TrapPlayer trap = new TrapPlayer(playerList.get(userIndex).getPos_X() - 10, playerList.get(userIndex).getPos_Y(), screenGraphics, cnt, observer);
 		trap.drawImage();
 
 	}

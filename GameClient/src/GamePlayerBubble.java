@@ -12,6 +12,7 @@ public class GamePlayerBubble implements Runnable{
 	private Thread th;
 	private KeyListener keyListener;
 	private int cnt1;
+	private int userIndex = GamingView.userIndex;
 	
 	//public static ArrayList<Bubble> tempBubbleList = new ArrayList();
 	public static ArrayList<Bubble> bubbleList = new ArrayList(); // 물풍선 담을 리스트
@@ -45,22 +46,22 @@ public class GamePlayerBubble implements Runnable{
 			if(GamingView.cnt - bubbleList.get(i).getStartCnt() >= 90) {
 				stage.breakBlock(bubbleList.get(i).getX(),bubbleList.get(i).getY());
 				bubbleList.remove(i);
-				GamingView.player.downBubbleNum();
+				GamingView.playerList.get(userIndex).downBubbleNum();
 			}
 		}
 	}
 	
 	// 2초뒤 물풍선 없어짐
 	public void makeBubble(Bubble newBubble) {
-		if(GamingView.player.getBubbleNum() < GamingView.player.getMaxBubbleNum()) {
-			GamingView.player.addBubbleNum();
+		if(GamingView.playerList.get(userIndex).getBubbleNum() < GamingView.playerList.get(userIndex).getMaxBubbleNum()) {
+			GamingView.playerList.get(userIndex).addBubbleNum();
 			
 			Timer timer=new Timer();
 			TimerTask task=new TimerTask(){
 			    @Override
 			    public void run() {
 			    	bubbleList.remove(newBubble);
-			    	GamingView.player.downBubbleNum();
+			    	GamingView.playerList.get(userIndex).downBubbleNum();
 			    }
 			};
 			timer.schedule(task, 2000);
@@ -74,7 +75,7 @@ public class GamePlayerBubble implements Runnable{
 	
 	@Override
 	public void run(){
-		while(!GamingView.player.getPlayerState().equals("die")) {
+		while(!GamingView.playerList.get(userIndex).getPlayerState().equals("die")) {
 			System.out.println("현재 물풍선 리스트 크기: "+bubbleList.size());
 			removeBubble();
 		}
