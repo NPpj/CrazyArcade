@@ -15,6 +15,7 @@ class ListenNetwork extends Thread {
 	LobbyFrame lobbyFrame;
 	WaitRoomFrame waitRoomFrame;
 	GamingView gamingView;
+	int userIndex = -1;
 
 	public ListenNetwork(ObjectInputStream ois, ObjectOutputStream oos, Socket socket) {
 		this.ois = ois;
@@ -148,7 +149,7 @@ class ListenNetwork extends Thread {
 					String[] Result300 = cm.getData().split("/"); // [0]:roomId [1]:현재 방 userList
 					String UserListStr300 = Result300[1].substring(1, Result300[1].length() - 1);
 					String[] UserList300 = UserListStr300.split(", "); // userName들
-					int userIndex = Arrays.asList(UserList300).indexOf(user.getId()); // 자기가 방에 몇번째로 들어온 user인지
+					userIndex = Arrays.asList(UserList300).indexOf(user.getId()); // 자기가 방에 몇번째로 들어온 user인지
 					
 					// 게임 시작 
 					gamingView = new GamingView(Integer.parseInt(Result300[0]), userIndex, UserList300.length);
@@ -173,13 +174,19 @@ class ListenNetwork extends Thread {
 						int roomId = gi.getRoomId();
 						int userId = gi.getUserId();
 						String data = gi.getData();
-						GamingView.Bubble_XY.add(data);
+						String[] data401 = gi.getData().split(",");
+						GamePlayerBubble.bubbleList.add(new Bubble(Integer.parseInt(data401[0]), Integer.parseInt(data401[1]), GamingView.cnt));
+						GamePlayerBubble.fluidList.add(new Fluid(Integer.parseInt(data401[0]), Integer.parseInt(data401[1]), GamingView.cnt));
 					}else if(gi.code.matches("402")) {//플레이어 아이템 먹기 
 						int roomId = gi.getRoomId();
 						int userId = gi.getUserId();
 						String data = gi.getData();
 						String[] d = data.split(",");
 						PlayerEatItem(d[0],d[1],userId);
+					}else if(gi.code.matches("403")) { // 맵 블럭 깨기
+						String data = gi.getData();
+						String[] d = data.split(",");
+						Stage.breakBlock(Integer.parseInt(d[0]), Integer.parseInt(d[1]));
 					}
 				}
 				else

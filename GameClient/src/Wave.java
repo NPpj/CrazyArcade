@@ -36,6 +36,5 @@ public class Wave extends addModel{
 		drawAllImage(left,getX()-52,getY(),cnt,11,observer);
 		drawAllImage(right,getX()+52,getY(),cnt,11,observer);
 		drawAllImage(center,getX(),getY(),cnt,11,observer);
-		
 	}
 }

@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 
 public class Stage implements Runnable{
 	private Thread th;
-	private int userIndex = GamingView.userIndex;
+	private static int userIndex = GamingView.userIndex;
 	
 	private Image tileImg = null; // 맵 타일
 	public static final int BLOCK_W = 51;
@@ -81,7 +81,7 @@ public class Stage implements Runnable{
 		}
 	}
 	
-	public void breakBlock(int x, int y) {
+	public static void breakBlock(int x, int y) {
 		int len = GamingView.playerList.get(userIndex).waveLen;
 		for (int i = 1; i <= len; i++) {
 			if (x >= i)

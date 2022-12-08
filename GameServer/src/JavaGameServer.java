@@ -435,6 +435,11 @@ public class JavaGameServer extends JFrame {
 							String data = gi.getData();
 							AppendText(data);
 							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
+						}else if(gi.code.matches("403")) { // 물풍선에 의한 블럭 깨지기
+							int roomId = gi.getRoomId();
+							int userId = gi.getUserId();
+							String data = gi.getData();
+							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
 						}
 					}else
 						continue;

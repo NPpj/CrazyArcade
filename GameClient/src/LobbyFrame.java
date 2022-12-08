@@ -117,6 +117,7 @@ public class LobbyFrame extends JFrame{
 			btnEnterRoom[i].setContentAreaFilled(false);// 배경색 없음
 			btnEnterRoom[i].setBorderPainted(false); // 테두리 없음
 			btnEnterRoom[i].addActionListener(new MyactionListener());
+			btnEnterRoom[i].setForeground(new Color(0X99ffffff));
         }
 		//JButton btnEnterRoom = makeEnterRoomBtn();
 		

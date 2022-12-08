@@ -50,7 +50,8 @@ public class GamingView extends JFrame implements Runnable {
 
 	private KeyListener keyListener;
 	public static ArrayList<GamePlayer> playerList = new ArrayList<>(); // 게임 플레이어 리스트
-	private int playerNum;
+	//public static ArrayList<GamePlayerBubble> playerBubbleList = new ArrayList();
+	public static int playerNum;
 	public static int roomNum;
 	
 	// 초기 플레이어 x, y 좌표
@@ -169,8 +170,9 @@ public class GamingView extends JFrame implements Runnable {
 		stage.drawBoss(g);
 		stage.drawItems(g);
 		bubbleThread.drawBubbles(g);
+		bubbleThread.drawFluid(g);
 
-//		// player 상태에 따른 이미지 변경
+		// player 상태에 따른 이미지 변경
 //		if (playerList.get(userIndex).getPlayerState() == "live")
 //			drawPlayer();
 //		else if (playerList.get(userIndex).getPlayerState() == "trap")
@@ -179,6 +181,9 @@ public class GamingView extends JFrame implements Runnable {
 //			diePlayer();
 //			playerList.get(userIndex).setPlayerState("dispose");
 //		}
+		
+		drawPlayer();
+		
 		this.repaint();
 	}
 	
@@ -230,7 +235,6 @@ public class GamingView extends JFrame implements Runnable {
 		String direction = playerList.get(userIndex).getDirection();
 
 		if (GamingView.playerList.get(userIndex).playerMove) {
-			System.out.println(userIndex+" : "+GamingView.playerList.get(userIndex).playerMove);
 			if (direction.equals("up") || direction.equals("down")) { // 케릭터의 움직임 여부를 판단합니다.
 				// 케릭터의 방향에 따라 걸어가는 모션을 취하는
 				// 케릭터 이미지를 시간차를 이용해 순차적으로 그립니다.
