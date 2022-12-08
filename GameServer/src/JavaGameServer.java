@@ -443,7 +443,7 @@ public class JavaGameServer extends JFrame {
 							String data = gi.getData();
 							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
 
-						}else if(gi.code.matches("404")) {// ав╠Б
+						}else if(gi.code.matches("404")) { // ав╠Б
 							int roomId = gi.getRoomId();
 							int userId = gi.getUserId();
 							String data = gi.getData();

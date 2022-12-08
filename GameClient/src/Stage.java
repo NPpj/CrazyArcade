@@ -94,8 +94,6 @@ public class Stage implements Runnable{
 			if (y + i < 13)
 				map[y + i][x] = 0;
 			map[y][x] = 0;
-			GameInfo obcm = new GameInfo("403", GamingView.roomNum, userIndex, String.valueOf(x)+","+String.valueOf(y));
-			SendObject(obcm);
 		}
 	}
 	
