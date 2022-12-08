@@ -53,13 +53,10 @@ public class GamingView extends JFrame implements Runnable {
 	//public static ArrayList<GamePlayerBubble> playerBubbleList = new ArrayList();
 	public static int playerNum;
 	public static int roomNum;
-	
+	public static Monster boss = new Monster(320, 100);
 	// 초기 플레이어 x, y 좌표
 	private int[] init_X = { 200, 275, 480, 530 };
 	private int[] init_Y = { 790, 790, 790, 790 };
-
-	// 보스 생성
-	public static Monster boss = new Monster(320, 100);
 	
 	// 블록 크기 
 	public static final int BLOCK_W = 50;
@@ -171,18 +168,21 @@ public class GamingView extends JFrame implements Runnable {
 		stage.drawItems(g);
 		bubbleThread.drawBubbles(g);
 		bubbleThread.drawFluid(g);
-
-		// player 상태에 따른 이미지 변경
-//		if (playerList.get(userIndex).getPlayerState() == "live")
-//			drawPlayer();
-//		else if (playerList.get(userIndex).getPlayerState() == "trap")
-//			trapPlayer();
-//		else if (playerList.get(userIndex).getPlayerState() == "die") {
-//			diePlayer();
-//			playerList.get(userIndex).setPlayerState("dispose");
-//		}
 		
-		drawPlayer();
+		for(int i=0;i<playerNum;i++) {
+		// player 상태에 따른 이미지 변경
+			if (playerList.get(i).getPlayerState() == "live")
+				drawPlayer(i);
+			else if (playerList.get(i).getPlayerState() == "trap")
+				trapPlayer(i);
+			else if (playerList.get(i).getPlayerState() == "die") {
+				playerList.get(i).dieCnt++;
+				if(playerList.get(i).dieCnt>100)
+					playerList.get(i).setPlayerState("dispose");
+				else
+					diePlayer(i);
+			}
+		}
 		
 		this.repaint();
 	}
@@ -216,14 +216,14 @@ public class GamingView extends JFrame implements Runnable {
 	}
 	*/
 
-	public void drawPlayer() {
+	
+	
+	public void drawPlayer(int i) {
 		screenGraphics.setFont(new Font("Default", Font.BOLD, 20));
 		screenGraphics.drawString(Long.toString(cnt), 50, 50);
 		// 위는 단순히 무한루프 적용여부와 케릭터 방향 체크를 위해
 		// 눈으로 보면서 테스트할 용도로 쓰이는 텍스트 표출입니다.
-		for(int i=0;i<playerNum;i++) {
-			movePlayer(playerList.get(i).getState(), playerList.get(i).getPos_X(), playerList.get(i).getPos_Y(), 64, 100);
-		}
+		movePlayer(playerList.get(i).getState(), playerList.get(i).getPos_X(), playerList.get(i).getPos_Y(), 64, 100);
 		
 	}
 
@@ -398,15 +398,15 @@ public class GamingView extends JFrame implements Runnable {
 	*/
 
 	// 죽기
-	public void diePlayer() {
-		DiePlayer die = new DiePlayer(playerList.get(userIndex).getPos_X() - 10, playerList.get(userIndex).getPos_Y() - 40, screenGraphics, cnt, observer);
+	public void diePlayer(int i) {
+		DiePlayer die = new DiePlayer(playerList.get(i).getPos_X() - 10, playerList.get(i).getPos_Y() - 40, screenGraphics, cnt, observer);
 		die.drawImage();
 
 	}
 
 	// 갇히기
-	public void trapPlayer() {
-		TrapPlayer trap = new TrapPlayer(playerList.get(userIndex).getPos_X() - 10, playerList.get(userIndex).getPos_Y(), screenGraphics, cnt, observer);
+	public void trapPlayer(int i) {
+		TrapPlayer trap = new TrapPlayer(playerList.get(i).getPos_X() - 10, playerList.get(i).getPos_Y(), screenGraphics, cnt, observer);
 		trap.drawImage();
 
 	}

@@ -16,7 +16,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-public class WaitRoomFrame  extends JFrame {
+public class WaitRoomFrame  extends JFrame{
 	//private WaitPanel waitPanel = new WaitPanel();
 	private JPanel contentPane;
 	//private Container c;
@@ -43,6 +43,7 @@ public class WaitRoomFrame  extends JFrame {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
+	
 	public WaitRoomFrame(int roomNum, Boolean isOwner) {
 		this.userName=user.getId();
 		this.ois = user.getNet().getOIS();
@@ -62,6 +63,7 @@ public class WaitRoomFrame  extends JFrame {
 		};
 		
 		
+		 
 		//setContentPane(waitPanel);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);

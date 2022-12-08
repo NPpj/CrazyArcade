@@ -326,6 +326,7 @@ public class JavaGameServer extends JFrame {
 					String msg = null;
 					ChatMsg cm = null;
 					GameInfo gi = null;
+					MonsterInfo mi = null;
 					GameRoom gameRoom = null;
 					if (socket == null)
 						break;
@@ -405,6 +406,7 @@ public class JavaGameServer extends JFrame {
 						gameRoom = RoomManager.getGameRoom(cm.getData());
 						gameRoom.setIsPlaying(true);
 						WriteSome("300", roomId+"/"+gameRoom.getUserList(), gameRoom.getUserList());
+			
 					}
 					else if (cm.code.matches("500")) { // logout message Ã³¸®
 						Logout();
@@ -436,6 +438,12 @@ public class JavaGameServer extends JFrame {
 							AppendText(data);
 							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
 						}else if(gi.code.matches("403")) { // ¹°Ç³¼±¿¡ ÀÇÇÑ ºí·° ±úÁö±â
+							int roomId = gi.getRoomId();
+							int userId = gi.getUserId();
+							String data = gi.getData();
+							WriteSomeObject(gi,RoomManager.getGameRoom(String.valueOf(roomId)).getUserList());
+
+						}else if(gi.code.matches("404")) {// Á×±â
 							int roomId = gi.getRoomId();
 							int userId = gi.getUserId();
 							String data = gi.getData();

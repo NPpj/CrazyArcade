@@ -1,5 +1,6 @@
 import java.awt.Graphics;
 import java.awt.Image;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -93,6 +94,8 @@ public class Stage implements Runnable{
 			if (y + i < 13)
 				map[y + i][x] = 0;
 			map[y][x] = 0;
+			GameInfo obcm = new GameInfo("403", GamingView.roomNum, userIndex, String.valueOf(x)+","+String.valueOf(y));
+			SendObject(obcm);
 		}
 	}
 	
@@ -146,12 +149,21 @@ public class Stage implements Runnable{
 				}
 				// 아이템 리스트에서 삭제하여 화면에 보이지 않게한다.
 				itemList.remove(i);
+				
 			}
 		}
 	}
 	
 	public void drawBoss(Graphics g) {
 		g.drawImage(boss.getCurrentState(), boss.getX(), boss.getY(), null);
+	}
+	
+	public static void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
+		try {
+			GamingView.oos.writeObject(ob);
+		} catch (IOException e) {
+			System.out.println("SendObject Error");
+		}
 	}
 	
 	public void start() {
@@ -163,7 +175,7 @@ public class Stage implements Runnable{
 	public void run() {
 		makeItems(new ItemSpeed(1,3));
 		makeItems(new ItemSpeed(12,3));
-		makeItems(new ItemSpeed(7,6));
+		makeItems(new ItemSpeed(6,9));
 		makeItems(new ItemSpeed(2,10));
 		makeItems(new ItemSpeed(6,11));
 		

@@ -1,43 +1,40 @@
 import java.awt.Graphics;
 import java.awt.Image;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 
 public class Monster implements Runnable{
-	// 좌표:320,100
+	// �넫�슦紐�:320,100
 	private Thread th;
 	private static int count;
 	public static int BOSS_MOVE=50;
 	
-	// 사용할 이미지
-	private Image bossBasicImage = new ImageIcon(JavaGameClientMain.class.getResource("/assets/monster/boss.png"))
+	// 占쎄텢占쎌뒠占쎈막 占쎌뵠沃섎챷占�
+	private Image bossBasicImage = new ImageIcon(JavaGameServer.class.getResource("/assets/monster/boss.png"))
 		.getImage();
-	private Image bossTrapImage = new ImageIcon(JavaGameClientMain.class.getResource("/assets/monster/trap_boss.png"))
+	private Image bossTrapImage = new ImageIcon(JavaGameServer.class.getResource("/assets/monster/trap_boss.png"))
 		.getImage();
-	private Image bossAngryImage = new ImageIcon(JavaGameClientMain.class.getResource("/assets/monster/angry_boss.png"))
+	private Image bossAngryImage = new ImageIcon(JavaGameServer.class.getResource("/assets/monster/angry_boss.png"))
 		.getImage();
 	
 	private int x, y;
 	
-	// 현재 상태
+	// 占쎌겱占쎌삺 占쎄맒占쎄묶
 	private Image currentState = bossBasicImage;
 	
-	// 한계 위치
+	// 占쎈립�⑨옙 占쎌맄燁삼옙
 	private static final int GROUND_START_X=18;
 	private static final int GROUND_START_Y=45;
 	private static final int GROUND_END_X=720;
 	private static final int GROUND_END_Y=800;
 	
-	// 방향
+	// 獄쎻뫚堉�
 	private String direction = "stop";
 	private int directionInt = 0;
-	private int n =0 ;
 	
-	private int[] directionIntList = {1,1,4,3,2,4,4,1,3,3,4,2,1,1,2,3,4,1,1,2,3,1,2,4,2,4,3};
-	// 생성자
+	// 占쎄문占쎄쉐占쎌쁽
 	public Monster(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -59,12 +56,12 @@ public class Monster implements Runnable{
 		return y;
 	}
 	
-	// 게임 시작 후 0.1초 간격으로 7번 공격함
+	// 野껊슣�뿫 占쎈뻻占쎌삂 占쎌뜎 0.1�룯占� 揶쏄쑨爰쏙옙�몵嚥∽옙 7甕곤옙 �⑤벀爰쏙옙釉�
 	public void initBossAttack() {
 		setCurrentState(bossAngryImage);
 		
 		for(int i=0;i<7;i++) {
-			System.out.println("보스가 초기 공격");
+//			System.out.println("癰귣똻�뮞揶쏉옙 �룯�뜃由� �⑤벀爰�");
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -73,12 +70,12 @@ public class Monster implements Runnable{
 		}
 	}
 	
-	// 게임 도중 1초 간격으로 3번 공격함
+	// 野껊슣�뿫 占쎈즲餓ο옙 1�룯占� 揶쏄쑨爰쏙옙�몵嚥∽옙 3甕곤옙 �⑤벀爰쏙옙釉�
 	public void bossAttack() {
 		setCurrentState(bossAngryImage);
 		
 		for(int i=0;i<3;i++) {
-			System.out.println("보스가 공격");
+//			System.out.println("癰귣똻�뮞揶쏉옙 �⑤벀爰�");
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -89,10 +86,7 @@ public class Monster implements Runnable{
 	
 	public void changeBasic() {
 		setCurrentState(bossBasicImage);
-//		directionInt = (int)(Math.random() * 3)+1; // 1:left, 2:right, 3:top, 4:down
-		directionInt = directionIntList[n++];
-		if(n==directionIntList.length)
-			n=0;
+		directionInt = (int)(Math.random() * 3)+1; // 1:left, 2:right, 3:top, 4:down
 		for(int i=0;i<8;i++) {
 			switch(directionInt) {
 			case 0:
@@ -104,7 +98,7 @@ public class Monster implements Runnable{
 				if((x-BOSS_MOVE) <= GROUND_START_X+BOSS_MOVE) {
 					direction = "right";
 					directionInt=2;
-					System.out.println("현재 좌표:"+x+", "+y);
+//					System.out.println("占쎌겱占쎌삺 �넫�슦紐�:"+x+", "+y);
 				}else
 					x-=BOSS_MOVE;
 					
@@ -115,7 +109,7 @@ public class Monster implements Runnable{
 				if((x+BOSS_MOVE) >= GROUND_END_X-BOSS_MOVE) {
 					direction = "left";
 					directionInt=1;
-					System.out.println("현재 좌표:"+x+", "+y);
+//					System.out.println("占쎌겱占쎌삺 �넫�슦紐�:"+x+", "+y);
 				}else
 					x+=BOSS_MOVE;
 					
@@ -126,7 +120,7 @@ public class Monster implements Runnable{
 				if((y-BOSS_MOVE) <= GROUND_START_Y+BOSS_MOVE) {
 					direction = "down";
 					directionInt=4;
-					System.out.println("현재 좌표:"+x+", "+y);
+//					System.out.println("占쎌겱占쎌삺 �넫�슦紐�:"+x+", "+y);
 				}else
 					y-=BOSS_MOVE;
 				break;
@@ -136,7 +130,7 @@ public class Monster implements Runnable{
 				if((y+BOSS_MOVE) >= GROUND_END_Y-BOSS_MOVE) {
 					direction = "top";
 					directionInt=3;
-					System.out.println("현재 좌표:"+x+", "+y);
+//					System.out.println("占쎌겱占쎌삺 �넫�슦紐�:"+x+", "+y);
 				} else
 					y+=BOSS_MOVE;
 				break;
@@ -147,9 +141,8 @@ public class Monster implements Runnable{
 				e.printStackTrace();
 			}
 
-		} // for문 끝
+		} // for�눧占� 占쎄국
 	}
-
 	
 	public void start() {
 		th = new Thread(this);

@@ -187,6 +187,11 @@ class ListenNetwork extends Thread {
 						String data = gi.getData();
 						String[] d = data.split(",");
 						Stage.breakBlock(Integer.parseInt(d[0]), Integer.parseInt(d[1]));
+					}else if(gi.code.matches("404")) {// 죽기
+						int roomId = gi.getRoomId();
+						int userId = gi.getUserId();
+						String data = gi.getData();
+						GamingView.playerList.get(userId).setPlayerState("die");
 					}
 				}
 				else
